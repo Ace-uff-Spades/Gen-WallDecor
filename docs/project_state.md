@@ -7,8 +7,7 @@
 
 ## Current Focus
 
-Executing the 22-task implementation plan (`docs/plans/2026-02-14-genwalldecor-implementation.md`).
-Currently completing Phase 2 — Backend Services.
+All 22 tasks from the implementation plan are complete. The app is ready for manual E2E testing with real API keys.
 
 ---
 
@@ -23,83 +22,89 @@ Currently completing Phase 2 — Backend Services.
 | 3 | Firebase Admin SDK initialization (singleton pattern) | ✅ Done |
 | 4 | Auth middleware (Bearer token verification, AUTH_DISABLED bypass) | ✅ Done |
 
-### Phase 2: Backend Services (In Progress)
+### Phase 2: Backend Services ✅ DONE
 
 | Task | Description | Status |
 |------|-------------|--------|
 | 5 | UserService (Firestore CRUD, daily rate limit, reset) | ✅ Done |
 | 6 | StorageService (GCS upload, signed URL, delete) | ✅ Done |
-| 7 | DescriptionService (GPT-4o-mini structured output) | ⏳ Pending |
-| 8 | ImageService (Gemini 2.5 Flash piece + wall render) | ⏳ Pending |
-| 9 | GenerationService (orchestrator: descriptions → images → GCS → Firestore) | ⏳ Pending |
+| 7 | DescriptionService (GPT-4o-mini structured output) | ✅ Done |
+| 8 | ImageService (Gemini 2.5 Flash piece + wall render) | ✅ Done |
+| 9 | GenerationService (orchestrator: descriptions → images → GCS → Firestore) | ✅ Done |
 
-### Phase 3: Backend API Routes
-
-| Task | Description | Status |
-|------|-------------|--------|
-| 10 | Rate limiting middleware (429 when daily limit hit) | ⏳ Pending |
-| 11 | API routes: generate, history, user + mount to index.ts | ⏳ Pending |
-
-### Phase 4: Frontend Implementation
+### Phase 3: Backend API Routes ✅ DONE
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 12 | API client + Firebase client config | ⏳ Pending |
-| 13 | Decor styles data (20 styles) + useCreationWizard hook | ⏳ Pending |
-| 14 | Landing page (hero, how-it-works, CTA) | ⏳ Pending |
-| 15 | Style selection page + StyleCard + WizardLayout | ⏳ Pending |
-| 16 | Visual preferences + room context (wizard steps 2-3) | ⏳ Pending |
-| 17 | Description review page + DescriptionCard | ⏳ Pending |
-| 18 | Wall view page + PieceGallery | ⏳ Pending |
-| 19 | History page | ⏳ Pending |
-| 20 | Navigation + AuthButton + useAuth hook | ⏳ Pending |
+| 10 | Rate limiting middleware (429 when daily limit hit) | ✅ Done |
+| 11 | API routes: generate, history, user + mount to index.ts | ✅ Done |
 
-### Phase 5: Docs & Integration
+### Phase 4: Frontend Implementation ✅ DONE
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 21 | Project documentation | ⏳ Pending |
-| 22 | Integration test — full generation flow | ⏳ Pending |
+| 12 | API client + Firebase client config | ✅ Done |
+| 13 | Decor styles data (20 styles) + useCreationWizard hook | ✅ Done |
+| 14 | Landing page (hero, how-it-works, CTA) | ✅ Done |
+| 15 | Style selection page + StyleCard + WizardLayout | ✅ Done |
+| 16 | Visual preferences + room context (wizard steps 2-3) | ✅ Done |
+| 17 | Description review page + DescriptionCard | ✅ Done |
+| 18 | Wall view page + PieceGallery | ✅ Done |
+| 19 | History page | ✅ Done |
+| 20 | Navigation + AuthButton + useAuth hook | ✅ Done |
+
+### Phase 5: Docs & Integration ✅ DONE
+
+| Task | Description | Status |
+|------|-------------|--------|
+| 21 | Project documentation | ✅ Done |
+| 22 | Integration test — full generation flow | ✅ Done |
 
 ---
 
 ## Test Status
 
-- **Backend:** 19 tests passing, 5 suites, 0 failures
-- **Frontend:** Not yet tested (Next.js app scaffolded, no test files yet)
+- **Backend:** 39 tests passing, 11 suites, 0 failures
+- **Frontend:** No test framework set up yet (no Jest/Vitest in package.json)
 
 ---
 
 ## Recent Sessions
 
-### 2026-02-28 (current)
-- Invoked executing-plans skill on the implementation plan
-- Discovered Tasks 1-3 were already completed in a previous session
-- Completed Tasks 4, 5, 6 (auth middleware, UserService, StorageService)
-- Created this docs set (Task 21 partially addressed)
+### 2026-02-28 (continued)
+- Completed all remaining tasks (7-22)
+- Backend: DescriptionService, ImageService, GenerationService, rate limiting, API routes
+- Frontend: API client, Firebase config, styles data, wizard hook, all pages (landing, create wizard, generate, wall view, history), navbar, auth
+- Integration test: full flow test with in-memory Firestore mock (5 tests)
+- All 39 backend tests passing
 
-### 2026-02-14 (prior session)
-- Scaffolded backend (Task 1) — Express, TypeScript, Jest, health endpoint
-- Scaffolded frontend (Task 2) — Next.js App Router, Tailwind v4 with custom theme
-- Implemented Firebase Admin SDK singleton (Task 3)
-- Set up git worktree at `.worktrees/implementation` on `feature/implementation` branch
+### 2026-02-28 (earlier)
+- Completed Tasks 4, 5, 6 (auth middleware, UserService, StorageService)
+- Created initial docs set
+
+### 2026-02-14 (initial session)
+- Scaffolded backend (Task 1) and frontend (Task 2)
+- Firebase Admin SDK singleton (Task 3)
+- Set up git worktree
 
 ---
 
 ## Known Issues
 
-- **TypeScript strict mode in tests:** `mockResolvedValueOnce` with partial mock objects requires `as any` casts. Applied fix in `userService.test.ts`. Watch for same pattern in future test files.
-- **Gemini model name:** Plan specifies `gemini-2.5-flash-image`. This is mocked in tests. If model name is wrong at runtime, it will fail on live API calls — verify before E2E testing.
-- **Tailwind v4:** Frontend was scaffolded with Tailwind v4 (not v3). The `tailwind.config.ts` approach may differ — verify custom theme is applied correctly when building landing page (Task 14).
+- **Gemini model name:** Code uses `gemini-2.5-flash-image`. This is mocked in tests. Verify model name against actual @google/genai SDK docs before live E2E testing.
+- **Frontend tests:** No test framework configured in frontend/package.json. The `useCreationWizard` hook has real logic that should be tested.
+- **TypeScript strict mode in tests:** `mockResolvedValueOnce` with partial mock objects requires `as any` casts.
 
 ---
 
-## Open Work Items (Todos)
+## Open Work Items
 
-- [ ] Tasks 7-22 from implementation plan (see table above)
 - [ ] Verify Gemini model name against actual @google/genai SDK docs before running live
-- [ ] Set up `.env` files locally (backend and frontend) with real API keys before E2E testing
-- [ ] Decide if frontend tests (React Testing Library) will be added before or after component build
+- [ ] Set up `.env` files locally (backend and frontend) with real API keys
+- [ ] Set up frontend test framework (Vitest or Jest + React Testing Library)
+- [ ] Add frontend component tests for useCreationWizard, wizard flow
+- [ ] Manual E2E testing with real APIs
+- [ ] Merge feature/implementation branch to main
 
 ---
 
