@@ -88,27 +88,45 @@
 
 ---
 
+### Session: 2026-02-28 (continued)
+
+**Commits:**
+- `38de589` Add DescriptionService with GPT-4o-mini structured output
+- `4531110` Add ImageService with Gemini 2.5 Flash
+- `3dff6d2` Add GenerationService orchestrator
+- `e8ce847` Add rate limiting middleware
+- `2c61d83` Add API routes (generate, history, user)
+- `9ee949e` Add API client and Firebase client config
+- `635f656` Add decor styles data and creation wizard hook
+- `ec8c3a5` Build landing page
+- `6c8da9c` Add navigation bar with auth
+- `e03fceb` Build style selection wizard
+- `7484608` Add visual preferences and room context wizard steps
+- `b8d2034` Build description review page
+- `50a209c` Build wall view page with piece gallery
+- `bf29a93` Build history page
+- `8fbe170` Add integration test (5 tests, full flow)
+
+**What was done:**
+- Completed all remaining tasks (7-22)
+- Backend: All 5 services, rate limiting middleware, 3 API route modules
+- Frontend: All 6 pages, 9 components, 4 lib modules
+- Integration test: full HTTP flow with in-memory Firestore mock
+
+**Backend test baseline after session:** 39 tests passing, 11 suites
+
+---
+
 ## Todos (Current)
 
-Remaining implementation tasks from the plan:
+All 22 implementation tasks are complete. Remaining work:
 
-| # | Task | Notes |
-|---|------|-------|
-| 7 | DescriptionService (GPT-4o-mini) | Install `openai`, `zod`. Structured output via Zod + `zodResponseFormat`. |
-| 8 | ImageService (Gemini) | Install `@google/genai`. Piece images (4:5) + wall render (16:9). |
-| 9 | GenerationService | Orchestrates 7+8+StorageService+Firestore. History limit enforcement. |
-| 10 | Rate limit middleware | Wraps UserService.canGenerate(), returns 429. |
-| 11 | API routes | generate.ts, history.ts, user.ts + mount to index.ts. |
-| 12 | Frontend: API client + Firebase client | firebase.ts, api.ts with auto-auth header. |
-| 13 | Frontend: Styles data + wizard hook | styles.ts (20 styles), useCreationWizard.ts |
-| 14 | Frontend: Landing page | Use frontend-design skill. Hero + how-it-works + CTA. |
-| 15 | Frontend: Style selection wizard | StyleCard, WizardLayout, create/page.tsx |
-| 16 | Frontend: Wizard steps 2-3 | ColorSchemeSelector, FrameMaterialSelector, RoomContextForm |
-| 17 | Frontend: Description review | generate/page.tsx, DescriptionCard |
-| 18 | Frontend: Wall view | wall/[id]/page.tsx, PieceGallery |
-| 19 | Frontend: History page | history/page.tsx |
-| 20 | Frontend: Nav + Auth | Navbar, AuthButton, useAuth |
-| 22 | Integration test | Full flow: descriptions → images → history → history/:id |
+- [ ] Verify Gemini model name (`gemini-2.5-flash-image`) against actual SDK docs
+- [ ] Set up `.env` files with real API keys for E2E testing
+- [ ] Set up frontend test framework (Vitest or Jest + React Testing Library)
+- [ ] Add frontend component tests (useCreationWizard, wizard flow)
+- [ ] Manual E2E testing with real APIs
+- [ ] Merge `feature/implementation` to `main`
 
 ---
 

@@ -40,6 +40,8 @@ Before doing any work, read these files (in this order):
 ### For frontend changes:
 - Read `frontend/src/lib/api.ts` for all API calls
 - Read `frontend/src/lib/styles.ts` for decor style data
+- Read `frontend/src/lib/useCreationWizard.ts` for wizard state shape
+- Read `frontend/src/app/globals.css` for Tailwind v4 theme colors
 - Read only the specific page/component you're modifying
 
 ### For test failures:
@@ -75,15 +77,7 @@ grep -r "api/generate" backend/src/ --include="*.ts"
 
 ## Implementation State (Quick Reference)
 
-The plan has 22 tasks. Status key: ✅ Done | ⏳ Pending
-
-```
-Phase 1 (Scaffolding):   Tasks 1-4  ✅ All done
-Phase 2 (Services):      Tasks 5-9  ✅ 5,6 done | ⏳ 7,8,9 pending
-Phase 3 (Routes):        Tasks 10-11 ⏳ Pending
-Phase 4 (Frontend):      Tasks 12-20 ⏳ Pending
-Phase 5 (Docs/Tests):    Tasks 21-22 ⏳ Pending
-```
+All 22 tasks complete. All 5 phases done. 39 backend tests passing.
 
 → See `docs/project_state.md` for full task-by-task breakdown.
 
@@ -106,7 +100,7 @@ The plan at `docs/plans/2026-02-14-genwalldecor-implementation.md` has exact cod
 ## Known Gotchas
 
 - **TypeScript strict mocks:** When using `jest.fn()` with an initial value and then calling `mockResolvedValueOnce()` with partial data, add `as any` to avoid TS2345 errors. See `userService.test.ts` for example.
-- **Tailwind v4 vs v3:** Frontend was scaffolded with Tailwind v4. CSS variable approach differs from v3. Don't add a `tailwind.config.ts` if one isn't there — check if Tailwind v4 uses a different config approach.
+- **Tailwind v4:** Frontend uses Tailwind v4 with `@theme inline` in `globals.css` for custom colors. No `tailwind.config.ts` — theme is defined in CSS, not JS.
 - **AUTH_DISABLED env var:** Set `AUTH_DISABLED=true` in `backend/.env` for local development without real Firebase credentials. Tests mock auth directly and don't need this.
 - **GCS signed URLs expire:** They're generated with 1-hour expiry. Old history entries will have broken image URLs. This is known tech debt.
 
