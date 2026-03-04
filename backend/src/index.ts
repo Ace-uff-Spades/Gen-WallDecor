@@ -1,13 +1,13 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { authenticate } from './middleware/authenticate';
 import { rateLimitMiddleware } from './middleware/rateLimit';
 import { generateRouter } from './routes/generate';
 import { historyRouter } from './routes/history';
 import { userRouter } from './routes/user';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;

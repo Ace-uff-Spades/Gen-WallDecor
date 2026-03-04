@@ -53,9 +53,14 @@ export class UserService {
   async incrementGenerationCount(uid: string): Promise<void> {
     const docRef = this.usersCollection.doc(uid);
     const doc = await docRef.get();
-    const data = doc.data() as UserData;
     const today = new Date().toISOString().split('T')[0];
 
+    if (!doc.exists) {
+      await docRef.set({ dailyGenerationCount: 1, lastResetDate: today }, { merge: true });
+      return;
+    }
+
+    const data = doc.data() as UserData;
     await docRef.update({
       dailyGenerationCount: data.lastResetDate === today
         ? data.dailyGenerationCount + 1
