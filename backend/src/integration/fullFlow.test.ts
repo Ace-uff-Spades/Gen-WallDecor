@@ -223,7 +223,8 @@ describe('Full Generation Flow Integration Test', () => {
     expect(detailRes.status).toBe(200);
     expect(detailRes.body.id).toBe(generationId);
     expect(detailRes.body.style).toBe('Modern');
-    expect(detailRes.body.pieceUrls).toHaveLength(4);
+    expect(detailRes.body.pieces).toHaveLength(4);
+    expect(detailRes.body.pieces[0]).toMatchObject({ title: expect.any(String), imageUrl: expect.any(String) });
     expect(detailRes.body.wallRenderUrl).toBeTruthy();
   });
 
