@@ -21,6 +21,9 @@
 .claude/
 .worktrees/
 
+# Firebase service account credentials — never commit these
+*-firebase-adminsdk-*.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*
