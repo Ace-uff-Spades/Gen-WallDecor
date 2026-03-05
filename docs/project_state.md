@@ -26,8 +26,8 @@ All 22 original tasks complete. 39 backend tests passing.
 | 3 | Firestore indexes + security rules + firebase.json | ✅ Done |
 | 4 | Backend Dockerfile (multi-stage, Cloud Run ready) | ✅ Done |
 | 5 | LangFuse token tracking (OpenAI + Gemini) | ✅ Done |
-| 6 | Sentry backend (@sentry/node) | ✅ Done |
-| 7 | Sentry frontend (@sentry/nextjs) | ✅ Done |
+| 6 | ~~Sentry backend~~ → Cloud Error Reporting (Cloud Run logs) | ✅ Done |
+| 7 | ~~Sentry frontend~~ → removed (private beta) | ✅ Done |
 | 8 | GitHub Actions CI workflow | ✅ Done |
 | 9 | GitHub Actions Deploy workflow | ✅ Done |
 | 10 | Vercel setup (manual) | ⬜ Pending |
@@ -52,8 +52,6 @@ All 22 original tasks complete. 39 backend tests passing.
 
 ## Known Issues
 
-- Async route errors not passed to `next(err)` won't be captured by Sentry (pre-existing Express pattern issue)
-- `NEXT_PUBLIC_SENTRY_DSN` is inlined at build time — must be present in Vercel build env, not just runtime
 - API clients (OpenAI, Gemini) init eagerly in constructors — container crashes on startup if keys missing (fine in prod since Cloud Run injects secrets before startup)
 
 ---

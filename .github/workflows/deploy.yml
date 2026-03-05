@@ -68,7 +68,6 @@ jobs:
               FIREBASE_PRIVATE_KEY=FIREBASE_PRIVATE_KEY:latest,\
               OPENAI_API_KEY=OPENAI_API_KEY:latest,\
               GEMINI_API_KEY=GEMINI_API_KEY:latest,\
-              SENTRY_DSN=SENTRY_DSN:latest,\
               LANGFUSE_SECRET_KEY=LANGFUSE_SECRET_KEY:latest,\
               LANGFUSE_PUBLIC_KEY=LANGFUSE_PUBLIC_KEY:latest" \
             --set-env-vars "\
