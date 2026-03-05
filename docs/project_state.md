@@ -1,117 +1,80 @@
 # GenWallDecor — Project State
 
-> Last updated: 2026-02-28
-> Branch: `feature/implementation` (worktree at `.worktrees/implementation`)
+> Last updated: 2026-03-04
+> Branch: `feature/hosting` (branched from `main` after implementation merge)
 
 ---
 
 ## Current Focus
 
-All 22 tasks from the implementation plan are complete. The app is ready for manual E2E testing with real API keys.
+Phase 6 code work is **complete** (all 9 coded tasks done on `feature/hosting`). Remaining work is all **manual one-time ops**: GCP infra setup, Vercel wiring, then first deploy + verification.
 
 ---
 
 ## Implementation Progress
 
-### Phase 1: Project Scaffolding ✅ DONE
+### Phase 1–5: App Implementation ✅ DONE (merged to main 2026-02-28)
+
+All 22 original tasks complete. 39 backend tests passing.
+
+### Phase 6: Hosting & Productization (feature/hosting branch)
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 1 | Initialize backend (Express, TypeScript, health endpoint) | ✅ Done |
-| 2 | Initialize frontend (Next.js, Tailwind v4, custom theme) | ✅ Done |
-| 3 | Firebase Admin SDK initialization (singleton pattern) | ✅ Done |
-| 4 | Auth middleware (Bearer token verification, AUTH_DISABLED bypass) | ✅ Done |
-
-### Phase 2: Backend Services ✅ DONE
-
-| Task | Description | Status |
-|------|-------------|--------|
-| 5 | UserService (Firestore CRUD, daily rate limit, reset) | ✅ Done |
-| 6 | StorageService (GCS upload, signed URL, delete) | ✅ Done |
-| 7 | DescriptionService (GPT-4o-mini structured output) | ✅ Done |
-| 8 | ImageService (Gemini 2.5 Flash piece + wall render) | ✅ Done |
-| 9 | GenerationService (orchestrator: descriptions → images → GCS → Firestore) | ✅ Done |
-
-### Phase 3: Backend API Routes ✅ DONE
-
-| Task | Description | Status |
-|------|-------------|--------|
-| 10 | Rate limiting middleware (429 when daily limit hit) | ✅ Done |
-| 11 | API routes: generate, history, user + mount to index.ts | ✅ Done |
-
-### Phase 4: Frontend Implementation ✅ DONE
-
-| Task | Description | Status |
-|------|-------------|--------|
-| 12 | API client + Firebase client config | ✅ Done |
-| 13 | Decor styles data (20 styles) + useCreationWizard hook | ✅ Done |
-| 14 | Landing page (hero, how-it-works, CTA) | ✅ Done |
-| 15 | Style selection page + StyleCard + WizardLayout | ✅ Done |
-| 16 | Visual preferences + room context (wizard steps 2-3) | ✅ Done |
-| 17 | Description review page + DescriptionCard | ✅ Done |
-| 18 | Wall view page + PieceGallery | ✅ Done |
-| 19 | History page | ✅ Done |
-| 20 | Navigation + AuthButton + useAuth hook | ✅ Done |
-
-### Phase 5: Docs & Integration ✅ DONE
-
-| Task | Description | Status |
-|------|-------------|--------|
-| 21 | Project documentation | ✅ Done |
-| 22 | Integration test — full generation flow | ✅ Done |
+| 1 | Restore .env.example files | ✅ Done |
+| 2 | CORS configurable via CORS_ORIGIN env var | ✅ Done |
+| 3 | Firestore indexes + security rules + firebase.json | ✅ Done |
+| 4 | Backend Dockerfile (multi-stage, Cloud Run ready) | ✅ Done |
+| 5 | LangFuse token tracking (OpenAI + Gemini) | ✅ Done |
+| 6 | Sentry backend (@sentry/node) | ✅ Done |
+| 7 | Sentry frontend (@sentry/nextjs) | ✅ Done |
+| 8 | GitHub Actions CI workflow | ✅ Done |
+| 9 | GitHub Actions Deploy workflow | ✅ Done |
+| 10 | Vercel setup (manual) | ⬜ Pending |
+| 11 | Pre-launch verification | ⬜ Pending |
 
 ---
 
 ## Test Status
 
 - **Backend:** 39 tests passing, 11 suites, 0 failures
-- **Frontend:** No test framework set up yet (no Jest/Vitest in package.json)
+- **Frontend:** No test framework (build validation only in CI)
 
 ---
 
-## Recent Sessions
+## Recent Session (2026-03-04)
 
-### 2026-02-28 (continued)
-- Completed all remaining tasks (7-22)
-- Backend: DescriptionService, ImageService, GenerationService, rate limiting, API routes
-- Frontend: API client, Firebase config, styles data, wizard hook, all pages (landing, create wizard, generate, wall view, history), navbar, auth
-- Integration test: full flow test with in-memory Firestore mock (5 tests)
-- All 39 backend tests passing
-
-### 2026-02-28 (earlier)
-- Completed Tasks 4, 5, 6 (auth middleware, UserService, StorageService)
-- Created initial docs set
-
-### 2026-02-14 (initial session)
-- Scaffolded backend (Task 1) and frontend (Task 2)
-- Firebase Admin SDK singleton (Task 3)
-- Set up git worktree
+- Added CI workflow (`.github/workflows/ci.yml`): backend tests + TS check + frontend build + gitleaks scan
+- Added Deploy workflow (`.github/workflows/deploy.yml`): Workload Identity Federation → Artifact Registry → Cloud Run
+- Deploy workflow injects all secrets from Secret Manager at deploy time; CORS_ORIGIN and GCP_PROJECT_ID from GitHub vars
 
 ---
 
 ## Known Issues
 
-- **Gemini model name:** Code uses `gemini-2.5-flash-image`. This is mocked in tests. Verify model name against actual @google/genai SDK docs before live E2E testing.
-- **Frontend tests:** No test framework configured in frontend/package.json. The `useCreationWizard` hook has real logic that should be tested.
-- **TypeScript strict mode in tests:** `mockResolvedValueOnce` with partial mock objects requires `as any` casts.
+- Async route errors not passed to `next(err)` won't be captured by Sentry (pre-existing Express pattern issue)
+- `NEXT_PUBLIC_SENTRY_DSN` is inlined at build time — must be present in Vercel build env, not just runtime
+- API clients (OpenAI, Gemini) init eagerly in constructors — container crashes on startup if keys missing (fine in prod since Cloud Run injects secrets before startup)
 
 ---
 
 ## Open Work Items
 
-- [ ] Verify Gemini model name against actual @google/genai SDK docs before running live
-- [ ] Set up `.env` files locally (backend and frontend) with real API keys
-- [ ] Set up frontend test framework (Vitest or Jest + React Testing Library)
-- [ ] Add frontend component tests for useCreationWizard, wizard flow
-- [ ] Manual E2E testing with real APIs
-- [ ] Merge feature/implementation branch to main
+- [ ] One-time GCP setup: Artifact Registry repo (`walldecorgen-backend`), deploy service account, secrets in Secret Manager
+- [ ] Vercel: connect repo, set env vars, add Vercel URL to Firebase Auth authorized domains
+- [ ] Deploy Firestore rules + index: `firebase deploy --only firestore:indexes,firestore:rules`
+- [ ] Set OpenAI spend limit + GCP budget alert
+- [ ] Create LangFuse project + add keys to Secret Manager
+- [ ] Manual E2E test on production after first deploy
+- [ ] Merge feature/hosting → main
 
 ---
 
 ## Future Enhancements (Post-MVP)
 
-- Real product catalog integration (buy the decor pieces)
+- Real product catalog integration
 - Per-piece swap/replacement without full regeneration
 - Eval pipeline for model quality comparison
-- Interactive 3D rendering (Three.js or similar)
+- Interactive 3D rendering
 - Dark mode support
+- Frontend unit tests (Vitest + RTL for useCreationWizard)

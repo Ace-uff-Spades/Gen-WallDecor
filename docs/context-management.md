@@ -8,7 +8,7 @@
 
 - **What it is:** AI wall decor generator. User picks style → GPT describes pieces → Gemini draws them.
 - **Two services:** `backend/` (Express + TypeScript) and `frontend/` (Next.js App Router)
-- **Branch:** All implementation work is on `feature/implementation` (worktree at `.worktrees/implementation`)
+- **Branch:** Hosting/CI work is on `feature/hosting`; merged implementation is on `main`
 - **Test command:** `cd backend && npm test`
 
 ---
@@ -77,7 +77,8 @@ grep -r "api/generate" backend/src/ --include="*.ts"
 
 ## Implementation State (Quick Reference)
 
-All 22 tasks complete. All 5 phases done. 39 backend tests passing.
+Phases 1–5 complete (merged to main). Phase 6 (hosting) code done on `feature/hosting`.
+39 backend tests passing. Manual ops (GCP + Vercel) remain before first deploy.
 
 → See `docs/project_state.md` for full task-by-task breakdown.
 
@@ -108,18 +109,10 @@ The plan at `docs/plans/2026-02-14-genwalldecor-implementation.md` has exact cod
 
 ## Git Workflow
 
-- **Main branch:** `main` (clean, no implementation code yet)
-- **Feature branch:** `feature/implementation` (all work happens here)
-- **Worktree:** `.worktrees/implementation/` (isolated workspace)
+- **Main branch:** `main` (Phases 1–5 merged)
+- **Active branch:** `feature/hosting` (Phase 6 hosting work)
 
 ```bash
-# Always work in the worktree
-cd /Users/abhi/Documents/Coding\ Projects/GenWallDecor/.worktrees/implementation
-
-# Check status
-git status
-git log --oneline -5
-
 # Run tests
 cd backend && npm test
 ```
