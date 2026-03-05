@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
+import { Langfuse } from 'langfuse';
 import { PieceDescription, UserPreferences } from '../types';
 
 const PieceDescriptionSchema = z.object({
@@ -13,6 +14,13 @@ const PieceDescriptionSchema = z.object({
 
 const DescriptionsResponseSchema = z.object({
   pieces: z.array(PieceDescriptionSchema),
+});
+
+const langfuse = new Langfuse({
+  secretKey: process.env.LANGFUSE_SECRET_KEY,
+  publicKey: process.env.LANGFUSE_PUBLIC_KEY,
+  baseUrl: process.env.LANGFUSE_BASE_URL,
+  flushAt: 1,
 });
 
 export class DescriptionService {
@@ -48,6 +56,12 @@ Provide exactly 4-6 pieces that work together as a curated collection.`;
 
   async generateDescriptions(preferences: UserPreferences, feedback?: string): Promise<PieceDescription[]> {
     const prompt = this.buildPrompt(preferences, feedback);
+    const trace = langfuse.trace({ name: 'generate-descriptions' });
+    const generation = trace.generation({
+      name: 'gpt-4o-mini-descriptions',
+      model: 'gpt-4o-mini',
+      input: prompt,
+    });
 
     const response = await this.client.chat.completions.parse({
       model: 'gpt-4o-mini',
@@ -56,6 +70,14 @@ Provide exactly 4-6 pieces that work together as a curated collection.`;
         { role: 'user', content: prompt },
       ],
       response_format: zodResponseFormat(DescriptionsResponseSchema, 'descriptions'),
+    });
+
+    generation.end({
+      usage: {
+        input: response.usage?.prompt_tokens,
+        output: response.usage?.completion_tokens,
+        total: response.usage?.total_tokens,
+      },
     });
 
     const parsed = response.choices[0].message.parsed;

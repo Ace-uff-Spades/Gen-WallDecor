@@ -1,10 +1,18 @@
 import { GoogleGenAI } from '@google/genai';
+import { Langfuse } from 'langfuse';
 import { PieceDescription } from '../types';
 
 export interface GeneratedImage {
   data: string; // base64
   mimeType: string;
 }
+
+const langfuse = new Langfuse({
+  secretKey: process.env.LANGFUSE_SECRET_KEY,
+  publicKey: process.env.LANGFUSE_PUBLIC_KEY,
+  baseUrl: process.env.LANGFUSE_BASE_URL,
+  flushAt: 1,
+});
 
 export class ImageService {
   private ai: InstanceType<typeof GoogleGenAI>;
@@ -26,6 +34,12 @@ The artwork should be photorealistic and suitable for framing. Show only the art
 
   async generatePieceImage(piece: PieceDescription, style: string): Promise<GeneratedImage> {
     const prompt = this.buildPiecePrompt(piece, style);
+    const trace = langfuse.trace({ name: 'generate-piece-image' });
+    const generation = trace.generation({
+      name: 'gemini-piece-image',
+      model: 'gemini-2.5-flash-image',
+      input: prompt,
+    });
 
     const response = await this.ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
@@ -33,6 +47,14 @@ The artwork should be photorealistic and suitable for framing. Show only the art
       config: {
         responseModalities: ['Image'],
         imageConfig: { aspectRatio: '4:5' },
+      },
+    });
+
+    generation.end({
+      usage: {
+        input: response.usageMetadata?.promptTokenCount,
+        output: response.usageMetadata?.candidatesTokenCount,
+        total: response.usageMetadata?.totalTokenCount,
       },
     });
 
@@ -67,12 +89,27 @@ ${pieceList}
 
 Show the wall from a slightly angled perspective to give depth. The room should feel lived-in and cohesive. Lighting should be warm and natural. The decor pieces should be arranged according to their placement descriptions.`;
 
+    const trace = langfuse.trace({ name: 'generate-wall-render' });
+    const generation = trace.generation({
+      name: 'gemini-wall-render',
+      model: 'gemini-2.5-flash-image',
+      input: prompt,
+    });
+
     const response = await this.ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: prompt,
       config: {
         responseModalities: ['Image'],
         imageConfig: { aspectRatio: '16:9' },
+      },
+    });
+
+    generation.end({
+      usage: {
+        input: response.usageMetadata?.promptTokenCount,
+        output: response.usageMetadata?.candidatesTokenCount,
+        total: response.usageMetadata?.totalTokenCount,
       },
     });
 
