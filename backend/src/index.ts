@@ -1,3 +1,11 @@
+import * as Sentry from '@sentry/node';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  enabled: !!process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV || 'development',
+});
+
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -25,6 +33,8 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/generate', authenticate, rateLimitMiddleware, generateRouter);
 app.use('/api/history', authenticate, historyRouter);
 app.use('/api/user', authenticate, userRouter);
+
+Sentry.setupExpressErrorHandler(app);
 
 if (require.main === module) {
   app.listen(PORT, () => {
