@@ -1,0 +1,78 @@
+name: Deploy
+
+# Triggers on every push to main (i.e. after a PR merges).
+# CI runs on the PR branch, so by merge time code is already verified.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy.yml'
+
+env:
+  REGION: us-central1
+  REGISTRY: us-central1-docker.pkg.dev
+  # Artifact Registry repo and Cloud Run service name
+  SERVICE: walldecorgen-backend
+  # GitHub variable: GCP_PROJECT_ID (e.g. walldecorgen)
+  # GitHub secret:   GCP_WORKLOAD_IDENTITY_PROVIDER
+  # GitHub secret:   GCP_SERVICE_ACCOUNT
+  # GitHub variable: FRONTEND_URL (e.g. https://genwalldecor.vercel.app)
+
+jobs:
+  deploy:
+    name: Build & deploy to Cloud Run
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # Required for Workload Identity Federation
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
+
+      - name: Build and push Docker image
+        working-directory: backend
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ vars.GCP_PROJECT_ID }}/${{ env.SERVICE }}/backend"
+          docker build \
+            -t "${IMAGE}:${{ github.sha }}" \
+            -t "${IMAGE}:latest" \
+            .
+          docker push "${IMAGE}:${{ github.sha }}"
+          docker push "${IMAGE}:latest"
+
+      - name: Deploy to Cloud Run
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ vars.GCP_PROJECT_ID }}/${{ env.SERVICE }}/backend"
+          gcloud run deploy ${{ env.SERVICE }} \
+            --image "${IMAGE}:${{ github.sha }}" \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --port 3001 \
+            --allow-unauthenticated \
+            --set-secrets "\
+              FIREBASE_PROJECT_ID=FIREBASE_PROJECT_ID:latest,\
+              FIREBASE_CLIENT_EMAIL=FIREBASE_CLIENT_EMAIL:latest,\
+              FIREBASE_PRIVATE_KEY=FIREBASE_PRIVATE_KEY:latest,\
+              OPENAI_API_KEY=OPENAI_API_KEY:latest,\
+              GEMINI_API_KEY=GEMINI_API_KEY:latest,\
+              SENTRY_DSN=SENTRY_DSN:latest,\
+              LANGFUSE_SECRET_KEY=LANGFUSE_SECRET_KEY:latest,\
+              LANGFUSE_PUBLIC_KEY=LANGFUSE_PUBLIC_KEY:latest" \
+            --set-env-vars "\
+              NODE_ENV=production,\
+              CORS_ORIGIN=${{ vars.FRONTEND_URL }},\
+              LANGFUSE_BASE_URL=https://cloud.langfuse.com" \
+            --quiet
