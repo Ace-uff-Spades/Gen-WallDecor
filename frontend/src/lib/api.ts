@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 async function getAuthHeader(): Promise<Record<string, string>> {
   const user = auth.currentUser;
-  if (!user) return {};
+  if (!user) throw new Error('Please sign in to continue');
   const token = await user.getIdToken();
   return { Authorization: `Bearer ${token}` };
 }
