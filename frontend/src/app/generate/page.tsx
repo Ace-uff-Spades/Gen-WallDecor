@@ -40,7 +40,9 @@ function GenerateContent() {
   }, [searchParams.toString()]);
 
   useEffect(() => {
-    fetchDescriptions();
+    const initialFeedback = searchParams.get('feedback') || undefined;
+    fetchDescriptions(initialFeedback);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchDescriptions]);
 
   const handleRegenerate = async () => {
