@@ -3,11 +3,13 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { api } from '@/lib/api';
+import { useAuth } from '@/lib/useAuth';
 import DescriptionCard, { PieceDescription } from '@/components/DescriptionCard';
 
 function GenerateContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { user, loading: authLoading, signIn } = useAuth();
 
   const [descriptions, setDescriptions] = useState<PieceDescription[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,10 +42,11 @@ function GenerateContent() {
   }, [searchParams.toString()]);
 
   useEffect(() => {
+    if (!user) return;
     const initialFeedback = searchParams.get('feedback') || undefined;
     fetchDescriptions(initialFeedback);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchDescriptions]);
+  }, [fetchDescriptions, user]);
 
   const handleRegenerate = async () => {
     await fetchDescriptions(feedback);
@@ -65,6 +68,31 @@ function GenerateContent() {
       setGenerating(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-secondary border-t-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="text-center max-w-sm px-4">
+          <h2 className="text-xl font-bold text-text-darker">Almost there</h2>
+          <p className="mt-2 text-text-dark">Sign in to generate your wall decor.</p>
+          <button
+            onClick={signIn}
+            className="mt-6 cursor-pointer rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
+          >
+            Sign in with Google
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
