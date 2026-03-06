@@ -8,6 +8,13 @@ import PieceGallery from '@/components/PieceGallery';
 interface GenerationData {
   id: string;
   style: string;
+  preferences: {
+    style: string;
+    colorScheme: string[];
+    frameMaterial: string;
+    roomType: string;
+    wallDimensions?: { width: number; height: number };
+  };
   wallRenderUrl: string;
   pieces: { title: string; imageUrl: string }[];
   createdAt: string;
@@ -38,8 +45,15 @@ export default function WallViewPage() {
   }, [id]);
 
   const handleRetry = () => {
-    const params = new URLSearchParams({ style: data?.style || '' });
-    if (feedback) params.set('feedback', feedback);
+    const prefs = data!.preferences;
+    const params = new URLSearchParams({
+      style: prefs.style,
+      colors: prefs.colorScheme.join(','),
+      frame: prefs.frameMaterial,
+      room: prefs.roomType,
+      ...(prefs.wallDimensions ? { w: String(prefs.wallDimensions.width), h: String(prefs.wallDimensions.height) } : {}),
+      ...(feedback ? { feedback } : {}),
+    });
     router.push(`/generate?${params.toString()}`);
   };
 
