@@ -1,13 +1,13 @@
 # GenWallDecor — Project State
 
-> Last updated: 2026-03-04
-> Branch: `feature/hosting` (branched from `main` after implementation merge)
+> Last updated: 2026-03-05
+> Branch: `feature/retry-auth-ux` (active), `main` (production-deployed)
 
 ---
 
 ## Current Focus
 
-Phase 6 code work is **complete** (all 9 coded tasks done on `feature/hosting`). Remaining work is all **manual one-time ops**: GCP infra setup, Vercel wiring, then first deploy + verification.
+Production deployed and E2E tested. Bug fixes from E2E testing in progress on `feature/retry-auth-ux` — awaiting merge decision.
 
 ---
 
@@ -17,21 +17,20 @@ Phase 6 code work is **complete** (all 9 coded tasks done on `feature/hosting`).
 
 All 22 original tasks complete. 39 backend tests passing.
 
-### Phase 6: Hosting & Productization (feature/hosting branch)
+### Phase 6: Hosting & Productization ✅ DONE (merged to main 2026-03-05)
+
+All tasks complete. App live on Cloud Run + Vercel.
+
+### Phase 7: E2E Bug Fixes (`feature/retry-auth-ux`)
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 1 | Restore .env.example files | ✅ Done |
-| 2 | CORS configurable via CORS_ORIGIN env var | ✅ Done |
-| 3 | Firestore indexes + security rules + firebase.json | ✅ Done |
-| 4 | Backend Dockerfile (multi-stage, Cloud Run ready) | ✅ Done |
-| 5 | LangFuse token tracking (OpenAI + Gemini) | ✅ Done |
-| 6 | ~~Sentry backend~~ → Cloud Error Reporting (Cloud Run logs) | ✅ Done |
-| 7 | ~~Sentry frontend~~ → removed (private beta) | ✅ Done |
-| 8 | GitHub Actions CI workflow | ✅ Done |
-| 9 | GitHub Actions Deploy workflow | ✅ Done |
-| 10 | Vercel setup (manual) | ⬜ Pending |
-| 11 | Pre-launch verification | ⬜ Pending |
+| 1 | Friendly auth error message in api.ts | ✅ Done |
+| 2 | Fix retry flow — pass full preferences in URL params | ✅ Done |
+| 3 | Pass initial feedback from URL to first description fetch | ✅ Done |
+| 4 | Sign-in gate on /generate page (replaces loading state) | ✅ Done |
+
+Awaiting merge to main.
 
 ---
 
@@ -42,29 +41,27 @@ All 22 original tasks complete. 39 backend tests passing.
 
 ---
 
-## Recent Session (2026-03-04)
+## Recent Session (2026-03-05)
 
-- Added CI workflow (`.github/workflows/ci.yml`): backend tests + TS check + frontend build + gitleaks scan
-- Added Deploy workflow (`.github/workflows/deploy.yml`): Workload Identity Federation → Artifact Registry → Cloud Run
-- Deploy workflow injects all secrets from Secret Manager at deploy time; CORS_ORIGIN and GCP_PROJECT_ID from GitHub vars
+- Completed full GCP + Vercel setup and first production deploy
+- E2E tested — main flow works; found 3 bugs + 1 UX issue
+- Fixed: retry flow missing preferences, auth error message, sign-in gate on /generate, initial feedback from URL
+- Known design smell: `data.style` and `data.preferences.style` are redundant in `wall/[id]/page.tsx` (post-MVP cleanup)
 
 ---
 
 ## Known Issues
 
-- API clients (OpenAI, Gemini) init eagerly in constructors — container crashes on startup if keys missing (fine in prod since Cloud Run injects secrets before startup)
+- API clients (OpenAI, Gemini) init eagerly — container crashes on startup if keys missing (fine in prod)
+- Wall page shows raw auth error for unauthenticated users (no sign-in prompt, unlike /generate) — post-MVP
 
 ---
 
 ## Open Work Items
 
-- [ ] One-time GCP setup: Artifact Registry repo (`walldecorgen-backend`), deploy service account, secrets in Secret Manager
-- [ ] Vercel: connect repo, set env vars, add Vercel URL to Firebase Auth authorized domains
-- [ ] Deploy Firestore rules + index: `firebase deploy --only firestore:indexes,firestore:rules`
+- [ ] Merge `feature/retry-auth-ux` → main (deploy will auto-trigger)
 - [ ] Set OpenAI spend limit + GCP budget alert
-- [ ] Create LangFuse project + add keys to Secret Manager
-- [ ] Manual E2E test on production after first deploy
-- [ ] Merge feature/hosting → main
+- [ ] Manual E2E re-test after merge
 
 ---
 
