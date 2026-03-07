@@ -86,4 +86,10 @@ describe('GET /api/history/:id', () => {
     expect(res.body.pieces[0].title).toBe('Piece 1');
     expect(res.body.pieces[0].description).toBeUndefined();
   });
+
+  it('returns 403 when generation belongs to a different user', async () => {
+    mockGetGeneration.mockResolvedValue({ ...mockGeneration, userId: 'other-user' });
+    const res = await request(app).get('/api/history/gen-1');
+    expect(res.status).toBe(403);
+  });
 });

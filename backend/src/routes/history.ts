@@ -31,6 +31,10 @@ historyRouter.get('/:id', async (req: Request<{ id: string }>, res: Response) =>
       res.status(404).json({ error: 'Generation not found' });
       return;
     }
+    if ((generation as any).userId !== (req as any).user.uid) {
+      res.status(403).json({ error: 'Forbidden' });
+      return;
+    }
     const data = generation as any;
     const pieceUrls = data.imageRefs
       ? await Promise.all(data.imageRefs.map((ref: string) => storageService.getSignedUrl(ref)))
