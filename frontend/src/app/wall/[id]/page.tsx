@@ -16,7 +16,14 @@ interface GenerationData {
     wallDimensions?: { width: number; height: number };
   };
   wallRenderUrl: string;
-  pieces: { title: string; imageUrl: string }[];
+  pieces: {
+    title: string;
+    imageUrl: string;
+    description?: string;
+    medium?: string;
+    dimensions?: string;
+    placement?: string;
+  }[];
   createdAt: string;
 }
 
