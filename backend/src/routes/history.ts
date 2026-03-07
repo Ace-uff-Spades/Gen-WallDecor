@@ -36,10 +36,19 @@ historyRouter.get('/:id', async (req: Request<{ id: string }>, res: Response) =>
       ? await Promise.all(data.imageRefs.map((ref: string) => storageService.getSignedUrl(ref)))
       : [];
     const wallRenderUrl = data.wallRenderRef ? await storageService.getSignedUrl(data.wallRenderRef) : null;
-    const pieces = pieceUrls.map((imageUrl: string, i: number) => ({
-      title: data.descriptions?.[i]?.title || `Piece ${i + 1}`,
-      imageUrl,
-    }));
+    const pieces = pieceUrls.map((imageUrl: string, i: number) => {
+      const desc = data.descriptions?.[i];
+      return {
+        title: desc?.title || `Piece ${i + 1}`,
+        imageUrl,
+        ...(desc ? {
+          description: desc.description,
+          medium: desc.medium,
+          dimensions: desc.dimensions,
+          placement: desc.placement,
+        } : {}),
+      };
+    });
     res.json({ ...generation, pieces, wallRenderUrl });
   } catch (error) {
     console.error('Failed to fetch generation:', error);
