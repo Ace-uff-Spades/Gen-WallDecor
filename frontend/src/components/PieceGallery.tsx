@@ -20,14 +20,18 @@ function PieceCard({ piece }: { piece: Piece }) {
   const hasDescription = piece.description || piece.medium || piece.dimensions || piece.placement;
 
   const handleDownload = async () => {
-    const res = await fetch(piece.imageUrl);
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${piece.title}.png`;
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      const res = await fetch(piece.imageUrl);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${piece.title}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Download failed:', err);
+    }
   };
 
   return (
@@ -89,7 +93,7 @@ export default function PieceGallery({ pieces }: PieceGalleryProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {pieces.map((piece, i) => (
-        <PieceCard key={i} piece={piece} />
+        <PieceCard key={`${piece.title}-${i}`} piece={piece} />
       ))}
     </div>
   );
