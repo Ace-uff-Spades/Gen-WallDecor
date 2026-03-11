@@ -76,7 +76,13 @@ POST /api/generate/images
 | `app/generate/page.tsx` | Description cards + generate images button |
 | `app/wall/[id]/page.tsx` | Wall render display + piece gallery |
 | `app/history/page.tsx` | Last 3 generations grid |
-| `components/Navbar.tsx` | Fixed top nav with auth button |
+| `app/admin/usage/page.tsx` | Admin LLM cost/usage dashboard (monthly summary + Trends charts) |
+| `components/Navbar.tsx` | Fixed top nav with auth button (Admin link for admin UID) |
+| `components/PieceGallery.tsx` | Two-panel gallery: thumbnail grid + sticky Details panel |
+| `components/DateRangeSelector.tsx` | Preset (7d/14d/30d) + custom date range picker |
+| `components/charts/CallVolumeChart.tsx` | Stacked bar: GPT vs Gemini daily call volume |
+| `components/charts/TokenBreakdownChart.tsx` | Stacked bar: GPT vs Gemini daily token usage |
+| `components/charts/CostChart.tsx` | Area chart: daily USD cost over time |
 
 ---
 
@@ -92,6 +98,9 @@ POST /api/generate/images
 | GET | `/api/history` | Required | Last 3 generations (with signed URLs) |
 | GET | `/api/history/:id` | Required | Specific generation with all URLs |
 | GET | `/api/user/profile` | Required | User profile + daily count |
+| GET | `/api/admin/usage` | Required + admin UID check | LLM usage/cost dashboard data (queries Langfuse) |
+| GET | `/api/admin/usage/timeseries` | Required + admin UID check | Daily-bucketed usage (from/to YYYY-MM-DD params) |
+| GET | `/api/history/:id/pieces/:pieceIndex/download-url` | Required + ownership | 10-min signed URL for piece image download |
 
 ---
 
@@ -179,6 +188,8 @@ POST /api/generate/images
 | OpenAI | `backend/.env` — `OPENAI_API_KEY` | Model: `gpt-4o-mini` |
 | Gemini | `backend/.env` — `GEMINI_API_KEY` | Model: `gemini-2.5-flash-image` |
 | Firebase Client SDK | `frontend/.env.local` — `NEXT_PUBLIC_FIREBASE_*` | Public config, safe to commit to `.env.example` |
+| Langfuse | `backend/.env` — `LANGFUSE_SECRET_KEY`, `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_BASE_URL` | Observability; also queried by admin dashboard |
+| Admin config | `backend/.env` — `ADMIN_UID`, `MONTHLY_BUDGET_USD` | Protects `/api/admin/usage`; budget for cost gauge |
 
 ---
 
