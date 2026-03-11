@@ -29,10 +29,10 @@ async function apiRequest(path: string, options: RequestInit = {}) {
 }
 
 export const api = {
-  generateDescriptions: (preferences: any, feedback?: string) =>
+  generateDescriptions: (preferences: any, feedback?: string, previousDescriptions?: any[]) =>
     apiRequest('/api/generate/descriptions', {
       method: 'POST',
-      body: JSON.stringify({ preferences, feedback }),
+      body: JSON.stringify({ preferences, feedback, previousDescriptions }),
     }),
 
   generateImages: (preferences: any, descriptions: any[]) =>
@@ -46,4 +46,12 @@ export const api = {
   getGeneration: (id: string) => apiRequest(`/api/history/${id}`),
 
   getProfile: () => apiRequest('/api/user/profile'),
+
+  getUsage: () => apiRequest('/api/admin/usage'),
+
+  getUsageTimeseries: (from: string, to: string) =>
+    apiRequest(`/api/admin/usage/timeseries?from=${from}&to=${to}`),
+
+  getPieceDownloadUrl: (generationId: string, pieceIndex: number) =>
+    apiRequest(`/api/history/${generationId}/pieces/${pieceIndex}/download-url`),
 };
