@@ -48,8 +48,8 @@ adminRouter.get('/usage/timeseries', async (req: Request, res: Response) => {
     return;
   }
 
-  const { from, to } = req.query as { from?: string; to?: string };
-  if (!from || !to) {
+  const { from, to } = req.query;
+  if (typeof from !== 'string' || typeof to !== 'string') {
     res.status(400).json({ error: 'from and to query params required (YYYY-MM-DD)' });
     return;
   }
