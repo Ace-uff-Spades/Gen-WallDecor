@@ -14,12 +14,19 @@ function presetToDays(preset: Preset): number {
   return 30;
 }
 
+function localDateStr(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function computeRange(preset: Preset): { from: string; to: string } {
   const today = new Date();
-  const to = today.toISOString().slice(0, 10);
+  const to = localDateStr(today);
   const from = new Date(today);
   from.setDate(from.getDate() - presetToDays(preset) + 1);
-  return { from: from.toISOString().slice(0, 10), to };
+  return { from: localDateStr(from), to };
 }
 
 export function getDefaultRange(preset: Preset = '7d'): DateRange {
@@ -32,7 +39,7 @@ interface Props {
 }
 
 const PRESETS: Preset[] = ['7d', '14d', '30d', 'custom'];
-const today = new Date().toISOString().slice(0, 10);
+const today = localDateStr(new Date());
 
 export default function DateRangeSelector({ value, onChange }: Props) {
   const handlePreset = (preset: Preset) => {
