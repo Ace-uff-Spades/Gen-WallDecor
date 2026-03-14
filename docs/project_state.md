@@ -1,6 +1,6 @@
 # GenWallDecor — Project State
 
-> Last updated: 2026-03-11
+> Last updated: 2026-03-14
 > Branch: `main` (all work committed on main)
 
 ---
@@ -34,15 +34,12 @@ All 7 tasks complete. Backend timeseries endpoint + Recharts charts (CallVolume,
 
 ---
 
-## Recent Session (2026-03-11)
+## Recent Session (2026-03-14)
 
-- Fixed stray root `package.json` causing Tailwind resolution error
-- Removed `AUTH_DISABLED=true` from backend `.env`; added Langfuse keys
-- Added Admin nav link to Navbar (only visible when signed in as admin UID)
-- Wall view: two-panel layout (thumbnails left, Details panel right) with download button
-- Fixed IDOR on `GET /history/:id` — added ownership check
-- Configured CORS on GCS bucket; added `GET /api/history/:id/pieces/:pieceIndex/download-url`
-- Phase 9: Completed all 7 time-series chart tasks (backend endpoint + 3 Recharts components + DateRangeSelector + admin page integration)
+- Admin timeseries charts: 3 bug fixes
+  1. `DateRangeSelector`: replaced `toISOString().slice(0,10)` with `localDateStr()` (UTC date ≠ local date in UTC+ timezones)
+  2. Chart components: switched to `dynamic(..., { ssr: false })` — static prerender froze `getDefaultRange` at build time
+  3. Backend zero-fill loop + query bound: replaced `setDate(getDate()+1)` with `setUTCDate(getUTCDate()+1)` — local timezone caused loop to exit before writing the last day's bucket
 
 ---
 
