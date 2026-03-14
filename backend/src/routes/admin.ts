@@ -56,7 +56,7 @@ adminRouter.get('/usage/timeseries', async (req: Request, res: Response) => {
 
   const fromIso = new Date(from).toISOString();
   const toExclusive = new Date(to);
-  toExclusive.setDate(toExclusive.getDate() + 1);
+  toExclusive.setUTCDate(toExclusive.getUTCDate() + 1);
   const toIso = toExclusive.toISOString();
 
   const langfuse = new Langfuse({
@@ -90,7 +90,7 @@ adminRouter.get('/usage/timeseries', async (req: Request, res: Response) => {
       geminiInputTokens: 0, geminiOutputTokens: 0,
       costUsd: 0,
     };
-    cursor.setDate(cursor.getDate() + 1);
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
   }
 
   for (const obs of observations) {
