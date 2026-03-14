@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/useAuth';
-import CallVolumeChart from '@/components/charts/CallVolumeChart';
-import TokenBreakdownChart from '@/components/charts/TokenBreakdownChart';
-import CostChart from '@/components/charts/CostChart';
+import dynamic from 'next/dynamic';
+
+const CallVolumeChart = dynamic(() => import('@/components/charts/CallVolumeChart'), { ssr: false });
+const TokenBreakdownChart = dynamic(() => import('@/components/charts/TokenBreakdownChart'), { ssr: false });
+const CostChart = dynamic(() => import('@/components/charts/CostChart'), { ssr: false });
 
 interface ModelStats {
   calls: number;
