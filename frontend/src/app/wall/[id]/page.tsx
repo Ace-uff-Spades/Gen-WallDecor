@@ -23,6 +23,14 @@ interface GenerationData {
     medium?: string;
     dimensions?: string;
     placement?: string;
+    type?: 'poster' | 'object';
+    position?: { x: number; y: number };
+    links?: {
+      frameUrl: string | null;
+      printUrl: string | null;
+      objectUrl: string | null;
+      mountingUrls: { name: string; url: string }[];
+    };
   }[];
   createdAt: string;
 }
@@ -36,6 +44,7 @@ export default function WallViewPage() {
   const [error, setError] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const [openDotIndex, setOpenDotIndex] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchGeneration() {
@@ -50,6 +59,14 @@ export default function WallViewPage() {
     }
     fetchGeneration();
   }, [id]);
+
+  useEffect(() => {
+    function handleClick() {
+      if (openDotIndex !== null) setOpenDotIndex(null);
+    }
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [openDotIndex]);
 
   const handleRetry = () => {
     const prefs = data!.preferences;
@@ -88,11 +105,75 @@ export default function WallViewPage() {
           Your Wall — {data.style}
         </h1>
         <div className="mt-6 overflow-hidden rounded-2xl border border-secondary/60">
-          <img
-            src={data.wallRenderUrl}
-            alt={`${data.style} wall render`}
-            className="w-full object-cover"
-          />
+          <div className="relative inline-block w-full">
+            <img
+              src={data.wallRenderUrl}
+              alt={`${data.style} wall render`}
+              className="w-full object-cover"
+            />
+
+            {/* Interactive piece dots */}
+            {data.pieces.map((piece, i) => {
+              if (!piece.position) return null;
+              const isOpen = openDotIndex === i;
+              return (
+                <div
+                  key={i}
+                  className="absolute"
+                  style={{
+                    left: `${piece.position.x}%`,
+                    top: `${piece.position.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                >
+                  {/* Dot */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setOpenDotIndex(isOpen ? null : i); }}
+                    className="w-4 h-4 rounded-full bg-white border-2 border-gray-700 shadow transition-transform hover:scale-125 focus:outline-none"
+                    aria-label={`View links for ${piece.title}`}
+                  />
+
+                  {/* Popover */}
+                  {isOpen && (
+                    <div
+                      className="absolute z-10 bg-white border border-gray-200 rounded-lg shadow-lg p-3 w-48 text-sm"
+                      style={{ top: '1.5rem', left: '50%', transform: 'translateX(-50%)' }}
+                    >
+                      <p className="font-semibold mb-2">{piece.title}</p>
+                      {piece.type === 'poster' && (
+                        <>
+                          {piece.links?.frameUrl && (
+                            <a href={piece.links.frameUrl} target="_blank" rel="noopener noreferrer" className="block text-blue-600 underline mb-1">
+                              Buy a frame
+                            </a>
+                          )}
+                          {piece.links?.printUrl && (
+                            <a href={piece.links.printUrl} target="_blank" rel="noopener noreferrer" className="block text-blue-600 underline">
+                              Print this poster
+                            </a>
+                          )}
+                        </>
+                      )}
+                      {piece.type === 'object' && (
+                        <>
+                          {piece.links?.objectUrl && (
+                            <a href={piece.links.objectUrl} target="_blank" rel="noopener noreferrer" className="block text-blue-600 underline mb-1">
+                              Buy this piece
+                            </a>
+                          )}
+                          {piece.links?.mountingUrls.map(m => (
+                            <a key={m.name} href={m.url} target="_blank" rel="noopener noreferrer" className="block text-blue-600 underline">
+                              Buy a {m.name}
+                            </a>
+                          ))}
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
