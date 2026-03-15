@@ -1,10 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { GenerationService } from '../services/generationService';
 import { StorageService } from '../services/storageService';
+import { ShoppingService } from '../services/shoppingService';
 
 export const historyRouter = Router();
 const generationService = new GenerationService();
 const storageService = new StorageService();
+const shoppingService = new ShoppingService();
 
 historyRouter.get('/', async (req: Request, res: Response) => {
   try {
@@ -67,14 +69,18 @@ historyRouter.get('/:id', async (req: Request<{ id: string }>, res: Response) =>
     const wallRenderUrl = data.wallRenderRef ? await storageService.getSignedUrl(data.wallRenderRef) : null;
     const pieces = pieceUrls.map((imageUrl: string, i: number) => {
       const desc = data.descriptions?.[i];
+      const links = desc ? shoppingService.getLinksForPiece(desc) : null;
       return {
         title: desc?.title || `Piece ${i + 1}`,
         imageUrl,
+        links,
         ...(desc ? {
           description: desc.description,
           medium: desc.medium,
           dimensions: desc.dimensions,
           placement: desc.placement,
+          type: desc.type,
+          position: desc.position,
         } : {}),
       };
     });

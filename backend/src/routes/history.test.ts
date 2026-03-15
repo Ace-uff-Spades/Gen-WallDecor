@@ -87,6 +87,32 @@ describe('GET /api/history/:id', () => {
     expect(res.body.pieces[0].description).toBeUndefined();
   });
 
+  it('includes shopping links in piece data for GET /:id', async () => {
+    mockGetGeneration.mockResolvedValue({
+      id: 'gen1',
+      userId: 'user123',
+      descriptions: [{
+        title: 'Forest Print',
+        description: 'A print',
+        medium: 'Giclee',
+        dimensions: '24x36',
+        placement: 'Center',
+        type: 'poster',
+        position: { x: 50, y: 40 },
+        frameRecommendation: { material: 'wood', color: 'oak', style: 'rustic' },
+      }],
+      imageRefs: ['generations/gen1/piece-0.png'],
+      wallRenderRef: 'generations/gen1/wall-render.png',
+    });
+    mockGetSignedUrl.mockResolvedValue('https://signed.url');
+
+    const res = await request(app).get('/api/history/gen1');
+    expect(res.status).toBe(200);
+    expect(res.body.pieces[0].links).toBeDefined();
+    expect(res.body.pieces[0].links.frameUrl).toContain('google.com');
+    expect(res.body.pieces[0].links.printUrl).toContain('google.com');
+  });
+
   it('returns 403 when generation belongs to a different user', async () => {
     mockGetGeneration.mockResolvedValue({ ...mockGeneration, userId: 'other-user' });
     const res = await request(app).get('/api/history/gen-1');
