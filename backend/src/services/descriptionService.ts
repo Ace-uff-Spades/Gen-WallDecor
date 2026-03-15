@@ -4,12 +4,28 @@ import { z } from 'zod';
 import { Langfuse } from 'langfuse';
 import { PieceDescription, UserPreferences } from '../types';
 
+const FrameRecommendationSchema = z.object({
+  material: z.string(),
+  color: z.string(),
+  style: z.string(),
+});
+
+const MountingRequirementSchema = z.object({
+  name: z.string(),
+  searchQuery: z.string(),
+});
+
 const PieceDescriptionSchema = z.object({
   title: z.string(),
   description: z.string(),
   medium: z.string(),
   dimensions: z.string(),
   placement: z.string(),
+  type: z.enum(['poster', 'object']),
+  position: z.object({ x: z.number().min(0).max(100), y: z.number().min(0).max(100) }),
+  // OpenAI structured output requires all fields; use nullable + transform to undefined for compatibility
+  frameRecommendation: FrameRecommendationSchema.nullable(),
+  mountingRequirements: z.array(MountingRequirementSchema).nullable(),
 });
 
 const DescriptionsResponseSchema = z.object({
@@ -47,6 +63,12 @@ export class DescriptionService {
         prompt += `\n\nUser feedback: ${feedback}`;
       }
       prompt += `\n\nRefine these descriptions based on the feedback. Keep pieces that are working well and modify those that need changing. Return exactly 4-6 pieces.`;
+
+      prompt += `\n\nFor each piece, you must also provide:
+- "type": "poster" if the piece is flat wall art (prints, paintings, photographs, canvas); "object" if it is a 3D decorative item (vase, sculpture, plant, figurine, clock, etc.)
+- "position": approximate center position of this piece on the wall as { "x": 0-100, "y": 0-100 } percentages, based on the placement you are describing
+- "frameRecommendation" (poster type only): the ideal frame for this piece given the style "${preferences.style}", color scheme "${preferences.colorScheme.join(', ')}", room "${preferences.roomType}", and preferred material "${preferences.frameMaterial}". Include: material, color, style.
+- "mountingRequirements" (object type only): list of additional items needed to display this piece on a wall (e.g. floating shelf, mounting bracket, picture ledge). Each item needs a "name" and a "searchQuery" suitable for Google Shopping.`;
     } else {
       prompt += `\n\nGenerate 4-6 wall decor piece descriptions for a ${preferences.roomType} in the ${preferences.style} style.
 
@@ -65,6 +87,12 @@ Provide exactly 4-6 pieces that work together as a curated collection.`;
       if (feedback) {
         prompt += `\n\nUser feedback on previous generation: ${feedback}`;
       }
+
+      prompt += `\n\nFor each piece, you must also provide:
+- "type": "poster" if the piece is flat wall art (prints, paintings, photographs, canvas); "object" if it is a 3D decorative item (vase, sculpture, plant, figurine, clock, etc.)
+- "position": approximate center position of this piece on the wall as { "x": 0-100, "y": 0-100 } percentages, based on the placement you are describing
+- "frameRecommendation" (poster type only): the ideal frame for this piece given the style "${preferences.style}", color scheme "${preferences.colorScheme.join(', ')}", room "${preferences.roomType}", and preferred material "${preferences.frameMaterial}". Include: material, color, style.
+- "mountingRequirements" (object type only): list of additional items needed to display this piece on a wall (e.g. floating shelf, mounting bracket, picture ledge). Each item needs a "name" and a "searchQuery" suitable for Google Shopping.`;
     }
 
     return prompt;
@@ -101,6 +129,10 @@ Provide exactly 4-6 pieces that work together as a curated collection.`;
       throw new Error('Failed to parse description response');
     }
 
-    return parsed.pieces as unknown as PieceDescription[];
+    return parsed.pieces.map(piece => ({
+      ...piece,
+      frameRecommendation: piece.frameRecommendation ?? undefined,
+      mountingRequirements: piece.mountingRequirements ?? undefined,
+    }));
   }
 }

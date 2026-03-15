@@ -117,6 +117,62 @@ describe('DescriptionService', () => {
     expect(result[0].title).toBe('Desert Sunset');
   });
 
+  it('returns pieces with type field set to poster or object', async () => {
+    mockParse.mockResolvedValue({
+      choices: [{
+        message: {
+          parsed: {
+            pieces: [{
+              title: 'Forest Print',
+              description: 'A print',
+              medium: 'Giclee',
+              dimensions: '24x36',
+              placement: 'Center',
+              type: 'poster',
+              position: { x: 50, y: 40 },
+              frameRecommendation: { material: 'wood', color: 'oak', style: 'rustic' },
+            }],
+          },
+        },
+      }],
+      usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 },
+    });
+
+    const result = await service.generateDescriptions(preferences);
+    expect(result[0].type).toBe('poster');
+    expect(result[0].position).toEqual({ x: 50, y: 40 });
+    expect(result[0].frameRecommendation).toBeDefined();
+  });
+
+  it('returns object pieces with mountingRequirements and no frameRecommendation', async () => {
+    mockParse.mockResolvedValue({
+      choices: [{
+        message: {
+          parsed: {
+            pieces: [{
+              title: 'Ceramic Vase',
+              description: 'A vase',
+              medium: 'Ceramic',
+              dimensions: '8x4',
+              placement: 'Left',
+              type: 'object',
+              position: { x: 20, y: 60 },
+              mountingRequirements: [
+                { name: 'floating shelf', searchQuery: 'floating shelf small' },
+              ],
+            }],
+          },
+        },
+      }],
+      usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 },
+    });
+
+    const result = await service.generateDescriptions(preferences);
+    expect(result[0].type).toBe('object');
+    expect(result[0].mountingRequirements).toHaveLength(1);
+    expect(result[0].frameRecommendation).toBeUndefined();
+  });
+
   it('generateDescriptions passes userId to Langfuse trace', async () => {
     mockParse.mockResolvedValue({
       choices: [{ message: { parsed: { pieces: [] } } }],
