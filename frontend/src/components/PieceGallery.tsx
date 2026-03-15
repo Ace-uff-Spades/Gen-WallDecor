@@ -3,6 +3,13 @@
 import { useState } from 'react';
 import { api } from '../lib/api';
 
+interface PieceLinks {
+  frameUrl: string | null;
+  printUrl: string | null;
+  objectUrl: string | null;
+  mountingUrls: { name: string; url: string }[];
+}
+
 interface Piece {
   title: string;
   imageUrl: string;
@@ -10,6 +17,9 @@ interface Piece {
   medium?: string;
   dimensions?: string;
   placement?: string;
+  type?: 'poster' | 'object';
+  links?: PieceLinks;
+  position?: { x: number; y: number };
 }
 
 interface PieceGalleryProps {
@@ -83,15 +93,76 @@ export default function PieceGallery({ pieces, generationId }: PieceGalleryProps
             )}
           </div>
         )}
-        <button
-          onClick={handleDownload}
-          className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-secondary/60 px-4 py-2 text-sm font-medium text-text-darker hover:bg-secondary transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
-          Download for print
-        </button>
+        {/* Download and shopping links */}
+        {selected.type === 'poster' && (
+          <div className="mt-4 space-y-2 border-t border-secondary/60 pt-4">
+            {selected.links?.frameUrl && (
+              <a
+                href={selected.links.frameUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-sm text-blue-600 underline"
+              >
+                Buy a frame — {selected.dimensions}
+              </a>
+            )}
+            {selected.links?.printUrl && (
+              <a
+                href={selected.links.printUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-sm text-blue-600 underline"
+              >
+                Print this poster ({selected.dimensions})
+              </a>
+            )}
+            <button
+              onClick={handleDownload}
+              className="block text-sm text-blue-600 underline text-left"
+            >
+              Download artwork (frameless)
+            </button>
+          </div>
+        )}
+
+        {selected.type === 'object' && (
+          <div className="mt-4 space-y-2 border-t border-secondary/60 pt-4">
+            {selected.links?.objectUrl && (
+              <a
+                href={selected.links.objectUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-sm text-blue-600 underline"
+              >
+                Buy this piece — {selected.title}
+              </a>
+            )}
+            {selected.links?.mountingUrls.map(m => (
+              <a
+                key={m.name}
+                href={m.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-sm text-blue-600 underline"
+              >
+                Buy a {m.name} (needed for wall mounting)
+              </a>
+            ))}
+          </div>
+        )}
+
+        {/* Fallback download for pieces without type info */}
+        {!selected.type && (
+          <button
+            onClick={handleDownload}
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-secondary/60 px-4 py-2 text-sm font-medium text-text-darker hover:bg-secondary transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+            Download for print
+          </button>
+        )}
       </div>
     </div>
   );
