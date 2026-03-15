@@ -71,6 +71,47 @@ describe('GenerationService', () => {
     expect(result[0].title).toBe('Art 1');
   });
 
+  it('generateDescriptions passes previousDescriptions to DescriptionService', async () => {
+    const previousDescriptions = [
+      { title: 'Art 1', description: 'Desc 1', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
+    ];
+    await service.generateDescriptions(preferences, 'more blue', previousDescriptions);
+    expect(mockDescriptionService.prototype.generateDescriptions).toHaveBeenCalledWith(
+      preferences,
+      'more blue',
+      previousDescriptions,
+      undefined
+    );
+  });
+
+  it('generateDescriptions forwards userId to DescriptionService', async () => {
+    await service.generateDescriptions(preferences, undefined, undefined, 'user-abc');
+    expect(mockDescriptionService.prototype.generateDescriptions).toHaveBeenCalledWith(
+      preferences,
+      undefined,
+      undefined,
+      'user-abc'
+    );
+  });
+
+  it('generateImages forwards userId to ImageService', async () => {
+    const descriptions = [
+      { title: 'Art 1', description: 'Desc 1', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
+    ];
+    await service.generateImages('user123', preferences, descriptions);
+    expect(mockImageService.prototype.generatePieceImage).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Art 1' }),
+      preferences.style,
+      'user123'
+    );
+    expect(mockImageService.prototype.generateWallRender).toHaveBeenCalledWith(
+      descriptions,
+      preferences.style,
+      preferences.roomType,
+      'user123'
+    );
+  });
+
   it('generateImages creates images and uploads to GCS', async () => {
     const descriptions = [
       { title: 'Art 1', description: 'Desc 1', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },

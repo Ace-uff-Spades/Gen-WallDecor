@@ -13,6 +13,18 @@ jest.mock('openai', () => {
   }));
 });
 
+// Mock Langfuse — functions defined inside factory to avoid jest hoisting issues.
+// Access them in tests via jest.requireMock('langfuse').__traceMock
+jest.mock('langfuse', () => {
+  const traceMock = jest.fn().mockReturnValue({
+    generation: jest.fn().mockReturnValue({ end: jest.fn() }),
+  });
+  return {
+    Langfuse: jest.fn().mockReturnValue({ trace: traceMock }),
+    __traceMock: traceMock,
+  };
+});
+
 describe('DescriptionService', () => {
   let service: DescriptionService;
   const preferences: UserPreferences = {
@@ -51,6 +63,33 @@ describe('DescriptionService', () => {
     expect(prompt).toContain('Wall dimensions: 12ft x 8ft');
   });
 
+  it('buildPrompt with previousDescriptions uses refinement instruction', () => {
+    const previousDescriptions = [
+      { title: 'Desert Sunset', description: 'A warm painting', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
+      { title: 'Woven Tapestry', description: 'A textured wall hanging', medium: 'Fiber art', dimensions: '18x24', placement: 'Left side' },
+    ];
+    const prompt = service.buildPrompt(preferences, undefined, previousDescriptions);
+    expect(prompt).toContain('Desert Sunset');
+    expect(prompt).toContain('Woven Tapestry');
+    expect(prompt).toContain('Refine');
+  });
+
+  it('buildPrompt with previousDescriptions and feedback labels feedback correctly', () => {
+    const previousDescriptions = [
+      { title: 'Desert Sunset', description: 'A warm painting', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
+    ];
+    const prompt = service.buildPrompt(preferences, 'more blue', previousDescriptions);
+    expect(prompt).toContain('more blue');
+    expect(prompt).toContain('User feedback:');
+    expect(prompt).toContain('Refine');
+  });
+
+  it('buildPrompt without previousDescriptions uses fresh generation instruction', () => {
+    const prompt = service.buildPrompt(preferences);
+    expect(prompt).toContain('Generate 4-6');
+    expect(prompt).not.toContain('Refine');
+  });
+
   it('generateDescriptions calls OpenAI with correct model', async () => {
     mockParse.mockResolvedValue({
       choices: [{
@@ -76,5 +115,15 @@ describe('DescriptionService', () => {
     );
     expect(result).toHaveLength(1);
     expect(result[0].title).toBe('Desert Sunset');
+  });
+
+  it('generateDescriptions passes userId to Langfuse trace', async () => {
+    mockParse.mockResolvedValue({
+      choices: [{ message: { parsed: { pieces: [] } } }],
+    });
+
+    const { __traceMock } = jest.requireMock('langfuse');
+    await service.generateDescriptions(preferences, undefined, undefined, 'user-abc');
+    expect(__traceMock).toHaveBeenCalledWith(expect.objectContaining({ userId: 'user-abc' }));
   });
 });

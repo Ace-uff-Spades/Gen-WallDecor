@@ -21,8 +21,8 @@ export class GenerationService {
     this.storageService = new StorageService();
   }
 
-  async generateDescriptions(preferences: UserPreferences, feedback?: string): Promise<PieceDescription[]> {
-    return this.descriptionService.generateDescriptions(preferences, feedback);
+  async generateDescriptions(preferences: UserPreferences, feedback?: string, previousDescriptions?: PieceDescription[], userId?: string): Promise<PieceDescription[]> {
+    return this.descriptionService.generateDescriptions(preferences, feedback, previousDescriptions, userId);
   }
 
   async generateImages(
@@ -33,7 +33,7 @@ export class GenerationService {
     // Generate individual piece images
     const pieceImages: GeneratedImage[] = [];
     for (const desc of descriptions) {
-      const image = await this.imageService.generatePieceImage(desc, preferences.style);
+      const image = await this.imageService.generatePieceImage(desc, preferences.style, userId);
       pieceImages.push(image);
     }
 
@@ -42,6 +42,7 @@ export class GenerationService {
       descriptions,
       preferences.style,
       preferences.roomType,
+      userId,
     );
 
     // Create Firestore document

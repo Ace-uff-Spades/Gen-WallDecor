@@ -8,12 +8,13 @@ const userService = new UserService();
 
 generateRouter.post('/descriptions', async (req: Request, res: Response) => {
   try {
-    const { preferences, feedback } = req.body;
+    const { preferences, feedback, previousDescriptions } = req.body;
+    const uid = (req as any).user.uid;
     if (!preferences || !preferences.style || !preferences.roomType) {
       res.status(400).json({ error: 'Missing required preferences (style, roomType)' });
       return;
     }
-    const descriptions = await generationService.generateDescriptions(preferences, feedback);
+    const descriptions = await generationService.generateDescriptions(preferences, feedback, previousDescriptions, uid);
     res.json({ descriptions });
   } catch (error: any) {
     console.error('Description generation failed:', error);

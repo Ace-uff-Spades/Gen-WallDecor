@@ -8,6 +8,7 @@ import { rateLimitMiddleware } from './middleware/rateLimit';
 import { generateRouter } from './routes/generate';
 import { historyRouter } from './routes/history';
 import { userRouter } from './routes/user';
+import { adminRouter } from './routes/admin';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -25,6 +26,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/generate', authenticate, rateLimitMiddleware, generateRouter);
 app.use('/api/history', authenticate, historyRouter);
 app.use('/api/user', authenticate, userRouter);
+app.use('/api/admin', authenticate, adminRouter);
 
 if (require.main === module) {
   app.listen(PORT, () => {

@@ -63,6 +63,30 @@ describe('POST /api/generate/descriptions', () => {
     const res = await request(app).post('/api/generate/descriptions').send({});
     expect(res.status).toBe(400);
   });
+
+  it('forwards previousDescriptions and uid to the service', async () => {
+    const previousDescriptions = [
+      { title: 'Art 1', description: 'Desc', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
+    ];
+    await request(app)
+      .post('/api/generate/descriptions')
+      .send({
+        preferences: {
+          style: 'Bohemian',
+          colorScheme: ['warm tones'],
+          frameMaterial: 'wood',
+          roomType: 'living room',
+        },
+        feedback: 'more blue',
+        previousDescriptions,
+      });
+    expect(mockGenerateDescriptions).toHaveBeenCalledWith(
+      expect.objectContaining({ style: 'Bohemian' }),
+      'more blue',
+      previousDescriptions,
+      'user123'
+    );
+  });
 });
 
 describe('POST /api/generate/images', () => {

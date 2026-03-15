@@ -17,4 +17,5 @@ export interface PieceDescription {
 export interface GenerationRequest {
   preferences: UserPreferences;
   feedback?: string;
+  previousDescriptions?: PieceDescription[];
 }

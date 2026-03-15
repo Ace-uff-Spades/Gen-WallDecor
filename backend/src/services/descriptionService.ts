@@ -30,10 +30,25 @@ export class DescriptionService {
     this.client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   }
 
-  buildPrompt(preferences: UserPreferences, feedback?: string): string {
-    let prompt = `You are an expert interior designer specializing in wall decor curation.
+  buildPrompt(preferences: UserPreferences, feedback?: string, previousDescriptions?: PieceDescription[]): string {
+    let prompt = `You are an expert interior designer specializing in wall decor curation.`;
 
-Generate 4-6 wall decor piece descriptions for a ${preferences.roomType} in the ${preferences.style} style.
+    if (previousDescriptions && previousDescriptions.length > 0) {
+      const formatted = previousDescriptions.map((p, i) =>
+        `Piece ${i + 1}: ${p.title}\n  Description: ${p.description}\n  Medium: ${p.medium}\n  Dimensions: ${p.dimensions}\n  Placement: ${p.placement}`
+      ).join('\n\n');
+
+      prompt += `\n\nHere are the current wall decor descriptions for a ${preferences.roomType} in the ${preferences.style} style:\n\n${formatted}`;
+      prompt += `\n\nColor scheme: ${preferences.colorScheme.join(', ')}\nFrame material: ${preferences.frameMaterial}`;
+      if (preferences.wallDimensions) {
+        prompt += `\nWall dimensions: ${preferences.wallDimensions.width}ft x ${preferences.wallDimensions.height}ft`;
+      }
+      if (feedback) {
+        prompt += `\n\nUser feedback: ${feedback}`;
+      }
+      prompt += `\n\nRefine these descriptions based on the feedback. Keep pieces that are working well and modify those that need changing. Return exactly 4-6 pieces.`;
+    } else {
+      prompt += `\n\nGenerate 4-6 wall decor piece descriptions for a ${preferences.roomType} in the ${preferences.style} style.
 
 Color scheme: ${preferences.colorScheme.join(', ')}
 Frame material: ${preferences.frameMaterial}
@@ -47,16 +62,17 @@ Each piece should:
 
 Provide exactly 4-6 pieces that work together as a curated collection.`;
 
-    if (feedback) {
-      prompt += `\n\nUser feedback on previous generation: ${feedback}`;
+      if (feedback) {
+        prompt += `\n\nUser feedback on previous generation: ${feedback}`;
+      }
     }
 
     return prompt;
   }
 
-  async generateDescriptions(preferences: UserPreferences, feedback?: string): Promise<PieceDescription[]> {
-    const prompt = this.buildPrompt(preferences, feedback);
-    const trace = langfuse.trace({ name: 'generate-descriptions' });
+  async generateDescriptions(preferences: UserPreferences, feedback?: string, previousDescriptions?: PieceDescription[], userId?: string): Promise<PieceDescription[]> {
+    const prompt = this.buildPrompt(preferences, feedback, previousDescriptions);
+    const trace = langfuse.trace({ name: 'generate-descriptions', userId });
     const generation = trace.generation({
       name: 'gpt-4o-mini-descriptions',
       model: 'gpt-4o-mini',

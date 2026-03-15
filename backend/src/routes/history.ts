@@ -24,6 +24,31 @@ historyRouter.get('/', async (req: Request, res: Response) => {
   }
 });
 
+historyRouter.get('/:id/pieces/:pieceIndex/download-url', async (req: Request<{ id: string; pieceIndex: string }>, res: Response) => {
+  try {
+    const generation = await generationService.getGeneration(req.params.id);
+    if (!generation) {
+      res.status(404).json({ error: 'Generation not found' });
+      return;
+    }
+    if ((generation as any).userId !== (req as any).user.uid) {
+      res.status(403).json({ error: 'Forbidden' });
+      return;
+    }
+    const pieceIndex = parseInt(req.params.pieceIndex, 10);
+    const imageRef = (generation as any).imageRefs?.[pieceIndex];
+    if (!imageRef) {
+      res.status(404).json({ error: 'Piece not found' });
+      return;
+    }
+    const url = await storageService.getSignedUrl(imageRef, 10 * 60 * 1000);
+    res.json({ url });
+  } catch (error) {
+    console.error('Failed to get download URL:', error);
+    res.status(500).json({ error: 'Failed to get download URL' });
+  }
+});
+
 historyRouter.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
   try {
     const generation = await generationService.getGeneration(req.params.id);

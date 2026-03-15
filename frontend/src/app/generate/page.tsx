@@ -27,11 +27,11 @@ function GenerateContent() {
       : {}),
   };
 
-  const fetchDescriptions = useCallback(async (feedbackText?: string) => {
+  const fetchDescriptions = useCallback(async (feedbackText?: string, previousDescriptions?: PieceDescription[]) => {
     setLoading(true);
     setError(null);
     try {
-      const result = await api.generateDescriptions(preferences, feedbackText);
+      const result = await api.generateDescriptions(preferences, feedbackText, previousDescriptions);
       setDescriptions(result.descriptions);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate descriptions');
@@ -49,7 +49,7 @@ function GenerateContent() {
   }, [fetchDescriptions, user]);
 
   const handleRegenerate = async () => {
-    await fetchDescriptions(feedback);
+    await fetchDescriptions(feedback, descriptions);
     setFeedback('');
   };
 

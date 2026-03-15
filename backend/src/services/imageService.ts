@@ -32,9 +32,9 @@ Dimensions: ${piece.dimensions}
 The artwork should be photorealistic and suitable for framing. Show only the artwork itself against a clean background, as if photographed for a catalog.`;
   }
 
-  async generatePieceImage(piece: PieceDescription, style: string): Promise<GeneratedImage> {
+  async generatePieceImage(piece: PieceDescription, style: string, userId?: string): Promise<GeneratedImage> {
     const prompt = this.buildPiecePrompt(piece, style);
-    const trace = langfuse.trace({ name: 'generate-piece-image' });
+    const trace = langfuse.trace({ name: 'generate-piece-image', userId });
     const generation = trace.generation({
       name: 'gemini-piece-image',
       model: 'gemini-2.5-flash-image',
@@ -77,6 +77,7 @@ The artwork should be photorealistic and suitable for framing. Show only the art
     pieces: PieceDescription[],
     style: string,
     roomType: string,
+    userId?: string,
   ): Promise<GeneratedImage> {
     const pieceList = pieces.map((p, i) =>
       `${i + 1}. "${p.title}" - ${p.description} (${p.medium}, ${p.dimensions}, ${p.placement})`
@@ -89,7 +90,7 @@ ${pieceList}
 
 Show the wall from a slightly angled perspective to give depth. The room should feel lived-in and cohesive. Lighting should be warm and natural. The decor pieces should be arranged according to their placement descriptions.`;
 
-    const trace = langfuse.trace({ name: 'generate-wall-render' });
+    const trace = langfuse.trace({ name: 'generate-wall-render', userId });
     const generation = trace.generation({
       name: 'gemini-wall-render',
       model: 'gemini-2.5-flash-image',

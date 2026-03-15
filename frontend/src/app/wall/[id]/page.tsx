@@ -81,28 +81,31 @@ export default function WallViewPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-      <h1 className="text-2xl font-bold text-text-darker md:text-3xl">
-        Your Wall — {data.style}
-      </h1>
-
-      {/* Wall Render */}
-      <div className="mt-6 overflow-hidden rounded-2xl border border-secondary/60">
-        <img
-          src={data.wallRenderUrl}
-          alt={`${data.style} wall render`}
-          className="w-full object-cover"
-        />
+    <div className="py-10">
+      {/* Constrained: heading + wall render */}
+      <div className="mx-auto max-w-5xl px-4 sm:px-6">
+        <h1 className="text-2xl font-bold text-text-darker md:text-3xl">
+          Your Wall — {data.style}
+        </h1>
+        <div className="mt-6 overflow-hidden rounded-2xl border border-secondary/60">
+          <img
+            src={data.wallRenderUrl}
+            alt={`${data.style} wall render`}
+            className="w-full object-cover"
+          />
+        </div>
       </div>
 
-      {/* Individual Pieces */}
-      <h2 className="mt-10 mb-6 text-xl font-bold text-text-darker">
-        Individual Pieces
-      </h2>
-      <PieceGallery pieces={data.pieces} />
+      {/* Full-width: piece gallery */}
+      <div className="mt-10 px-4 sm:px-6">
+        <h2 className="mb-6 text-xl font-bold text-text-darker">
+          Individual Pieces
+        </h2>
+        <PieceGallery pieces={data.pieces} generationId={id} />
+      </div>
 
-      {/* Retry */}
-      <div className="mt-10 text-center">
+      {/* Constrained: retry */}
+      <div className="mx-auto mt-10 max-w-5xl px-4 sm:px-6 text-center">
         {!showFeedback ? (
           <button
             onClick={() => setShowFeedback(true)}
