@@ -29,7 +29,7 @@ Description: ${piece.description}
 Medium: ${piece.medium}
 Dimensions: ${piece.dimensions}
 
-The artwork should be photorealistic and suitable for framing. Show only the artwork itself against a clean background, as if photographed for a catalog.`;
+The artwork should be photorealistic. Show only the artwork itself against a clean white background, as if photographed for a catalog. Show only the art — no border, no mat, no mounting hardware, no surrounding decoration.`;
   }
 
   async generatePieceImage(piece: PieceDescription, style: string, userId?: string): Promise<GeneratedImage> {

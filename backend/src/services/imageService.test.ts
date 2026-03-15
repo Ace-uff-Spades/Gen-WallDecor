@@ -29,6 +29,23 @@ describe('ImageService', () => {
     service = new ImageService();
   });
 
+  it('buildPiecePrompt does not mention frames or framing', () => {
+    const piece: PieceDescription = {
+      title: 'Forest Dawn',
+      description: 'A forest scene',
+      medium: 'Oil painting',
+      dimensions: '24x36',
+      placement: 'Center',
+      type: 'poster',
+      position: { x: 50, y: 40 },
+      frameRecommendation: { material: 'wood', color: 'oak', style: 'rustic' },
+    };
+    const prompt = service.buildPiecePrompt(piece, 'Bohemian');
+    expect(prompt.toLowerCase()).not.toContain('frame');
+    expect(prompt.toLowerCase()).not.toContain('framing');
+    expect(prompt.toLowerCase()).not.toContain('framed');
+  });
+
   it('buildPiecePrompt includes description details', () => {
     const prompt = service.buildPiecePrompt(description, 'Bohemian');
     expect(prompt).toContain('Desert Sunset');
