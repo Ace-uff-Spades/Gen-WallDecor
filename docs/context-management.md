@@ -8,7 +8,7 @@
 
 - **What it is:** AI wall decor generator. User picks style → GPT describes pieces → Gemini draws them.
 - **Two services:** `backend/` (Express + TypeScript) and `frontend/` (Next.js App Router)
-- **Branch:** Hosting/CI work is on `feature/hosting`; merged implementation is on `main`
+- **Branch:** All work on `main`
 - **Test command:** `cd backend && npm test`
 
 ---
@@ -77,8 +77,7 @@ grep -r "api/generate" backend/src/ --include="*.ts"
 
 ## Implementation State (Quick Reference)
 
-Phases 1–5 complete (merged to main). Phase 6 (hosting) code done on `feature/hosting`.
-39 backend tests passing. Manual ops (GCP + Vercel) remain before first deploy.
+Phases 1–10 complete on main. App live on Cloud Run + Vercel. 71 backend tests passing.
 
 → See `docs/project_state.md` for full task-by-task breakdown.
 
@@ -94,7 +93,7 @@ This project uses **TDD** (test-driven development) strictly:
 4. Run it — verify it **passes**
 5. Commit with the plan's commit message
 
-The plan at `docs/plans/2026-02-14-genwalldecor-implementation.md` has exact code for each task. Follow it closely.
+Plans live in `docs/plans/`. Read the relevant plan at session start if executing it.
 
 ---
 
@@ -104,13 +103,13 @@ The plan at `docs/plans/2026-02-14-genwalldecor-implementation.md` has exact cod
 - **Tailwind v4:** Frontend uses Tailwind v4 with `@theme inline` in `globals.css` for custom colors. No `tailwind.config.ts` — theme is defined in CSS, not JS.
 - **AUTH_DISABLED env var:** Set `AUTH_DISABLED=true` in `backend/.env` for local development without real Firebase credentials. Tests mock auth directly and don't need this.
 - **GCS signed URLs expire:** They're generated with 1-hour expiry. Old history entries will have broken image URLs. This is known tech debt.
+- **OpenAI structured output + Zod:** `.optional()` fields are not allowed — use `.nullable()` instead, then transform `null → undefined` on return. See `descriptionService.ts`.
 
 ---
 
 ## Git Workflow
 
-- **Main branch:** `main` (Phases 1–5 merged)
-- **Active branch:** `feature/hosting` (Phase 6 hosting work)
+- **Main branch:** `main`
 
 ```bash
 # Run tests

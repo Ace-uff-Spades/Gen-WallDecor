@@ -1,13 +1,13 @@
 # GenWallDecor — Project State
 
 > Last updated: 2026-03-15
-> Branch: `feature/shopping-links-download-objects` (awaiting merge to main)
+> Branch: `main` (all work committed on main)
 
 ---
 
 ## Current Focus
 
-Shopping links + piece type feature complete on `feature/shopping-links-download-objects`, awaiting merge.
+Phase 10 complete. No active work item.
 
 ---
 
@@ -23,9 +23,7 @@ App live on Cloud Run + Vercel.
 
 ### Phase 9: Admin Time-Series Charts ✅ DONE (committed to main 2026-03-11)
 
-### Phase 10: Shopping Links, Download, Piece Classification ✅ DONE (on `feature/shopping-links-download-objects`)
-
-All 7 tasks complete. Backend timeseries endpoint + Recharts charts (CallVolume, TokenBreakdown, Cost) + DateRangeSelector + wired into admin dashboard.
+### Phase 10: Shopping Links, Download, Piece Classification ✅ DONE (merged to main 2026-03-15)
 
 ---
 
