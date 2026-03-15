@@ -52,18 +52,20 @@ export class GenerationService {
       style: preferences.style,
       preferences,
       descriptions,
-      imageRefs: [] as string[],
-      wallRenderRef: '',
+      pieceVersions: [] as string[][],
+      wallRenderVersions: [] as string[],
+      finalizedAt: null,
+      pieceRegenerationCount: 0,
       createdAt: new Date().toISOString(),
     });
 
     const genId = generationRef.id;
 
-    // Upload pieces to GCS
+    // Upload pieces to GCS — versioned paths
     const pieceRefs: string[] = [];
     const pieceUrls: string[] = [];
     for (let i = 0; i < pieceImages.length; i++) {
-      const path = `generations/${genId}/piece-${i}.png`;
+      const path = `generations/${genId}/piece-${i}-v0.png`;
       const buffer = Buffer.from(pieceImages[i].data, 'base64');
       await this.storageService.uploadBuffer(buffer, path, pieceImages[i].mimeType);
       pieceRefs.push(path);
@@ -71,15 +73,20 @@ export class GenerationService {
       pieceUrls.push(url);
     }
 
-    // Upload wall render
-    const wallPath = `generations/${genId}/wall-render.png`;
+    // Upload wall render — versioned path
+    const wallPath = `generations/${genId}/wall-render-v0.png`;
     const wallBuffer = Buffer.from(wallRender.data, 'base64');
     await this.storageService.uploadBuffer(wallBuffer, wallPath, wallRender.mimeType);
     const wallUrl = await this.storageService.getSignedUrl(wallPath);
 
-    // Update Firestore with storage refs
+    // Update Firestore with versioned storage refs
     await db.collection('generations').doc(genId).set(
-      { imageRefs: pieceRefs, wallRenderRef: wallPath },
+      {
+        pieceVersions: pieceRefs.map(ref => [ref]),
+        wallRenderVersions: [wallPath],
+        finalizedAt: null,
+        pieceRegenerationCount: 0,
+      },
       { merge: true }
     );
 
@@ -104,21 +111,25 @@ export class GenerationService {
 
   async enforceHistoryLimit(userId: string): Promise<void> {
     const generations = await this.getUserGenerations(userId);
-    if (generations.length <= 3) return;
+    const finalized = (generations as any[]).filter(g => g.finalizedAt != null);
+    const maxFinalized = parseInt(process.env.MAX_FINALIZED_GENERATIONS ?? '3');
+    if (finalized.length <= maxFinalized) return;
 
-    const toDelete = generations.slice(3);
+    const toDelete = finalized.slice(maxFinalized);
     for (const gen of toDelete) {
       const data = gen as any;
-      // Delete GCS images
-      if (data.imageRefs) {
-        for (const ref of data.imageRefs) {
+      if (data.pieceVersions) {
+        for (const versions of data.pieceVersions as string[][]) {
+          for (const ref of versions) {
+            await this.storageService.deleteFile(ref);
+          }
+        }
+      }
+      if (data.wallRenderVersions) {
+        for (const ref of data.wallRenderVersions as string[]) {
           await this.storageService.deleteFile(ref);
         }
       }
-      if (data.wallRenderRef) {
-        await this.storageService.deleteFile(data.wallRenderRef);
-      }
-      // Delete Firestore doc
       await getDb().collection('generations').doc(gen.id).delete();
     }
   }

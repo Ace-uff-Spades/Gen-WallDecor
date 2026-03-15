@@ -123,4 +123,76 @@ describe('GenerationService', () => {
     expect(mockImageService.prototype.generateWallRender).toHaveBeenCalledTimes(1);
     expect(mockStorageService.prototype.uploadBuffer).toHaveBeenCalled();
   });
+
+  it('generateImages stores pieceVersions and wallRenderVersions (not imageRefs/wallRenderRef)', async () => {
+    const mockSet = jest.fn().mockResolvedValue(undefined);
+    const mockAdd = jest.fn().mockResolvedValue({ id: 'gen123' });
+    const { getDb } = require('../config/firebase');
+    getDb.mockReturnValue({
+      collection: jest.fn().mockReturnValue({
+        add: mockAdd,
+        doc: jest.fn().mockReturnValue({ set: mockSet, get: jest.fn(), delete: jest.fn() }),
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        get: jest.fn().mockResolvedValue({ docs: [] }),
+      }),
+    });
+
+    service = new GenerationService();
+    const descriptions = [
+      { title: 'Art 1', description: 'Desc 1', medium: 'Canvas', dimensions: '24x36', placement: 'Center', type: 'poster' as const, position: { x: 50, y: 50 } },
+    ];
+    await service.generateImages('user123', preferences, descriptions);
+
+    expect(mockSet).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pieceVersions: [['generations/gen123/piece-0-v0.png']],
+        wallRenderVersions: ['generations/gen123/wall-render-v0.png'],
+        finalizedAt: null,
+        pieceRegenerationCount: 0,
+      }),
+      { merge: true }
+    );
+  });
+
+  it('enforceHistoryLimit only evicts finalized generations and uses MAX_FINALIZED_GENERATIONS env var', async () => {
+    process.env.MAX_FINALIZED_GENERATIONS = '2';
+
+    const finalizedGen = (id: string) => ({
+      id,
+      data: () => ({
+        userId: 'user123',
+        finalizedAt: '2026-01-01T00:00:00.000Z',
+        pieceVersions: [['generations/' + id + '/piece-0-v0.png']],
+        wallRenderVersions: ['generations/' + id + '/wall-render-v0.png'],
+      }),
+    });
+    const draftGen = {
+      id: 'draft1',
+      data: () => ({ userId: 'user123', finalizedAt: null, pieceVersions: [], wallRenderVersions: [] }),
+    };
+
+    const mockDelete = jest.fn().mockResolvedValue(undefined);
+    const { getDb } = require('../config/firebase');
+    getDb.mockReturnValue({
+      collection: jest.fn().mockReturnValue({
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        get: jest.fn().mockResolvedValue({
+          docs: [finalizedGen('gen1'), finalizedGen('gen2'), finalizedGen('gen3'), draftGen],
+        }),
+        doc: jest.fn().mockReturnValue({ delete: mockDelete }),
+      }),
+    });
+
+    mockStorageService.prototype.deleteFile = jest.fn().mockResolvedValue(undefined);
+    service = new GenerationService();
+    await service.enforceHistoryLimit('user123');
+
+    // gen3 is the oldest finalized beyond limit=2; gen1 and gen2 are kept; draft is never evicted
+    expect(mockDelete).toHaveBeenCalledTimes(1);
+    expect(mockStorageService.prototype.deleteFile).toHaveBeenCalledWith('generations/gen3/piece-0-v0.png');
+
+    delete process.env.MAX_FINALIZED_GENERATIONS;
+  });
 });
