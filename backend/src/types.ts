@@ -36,3 +36,15 @@ export interface GenerationRequest {
   feedback?: string;
   previousDescriptions?: PieceDescription[];
 }
+
+export interface GenerationDocument {
+  userId: string;
+  style: string;
+  preferences: UserPreferences;
+  descriptions: PieceDescription[];
+  pieceVersions: string[][];       // pieceVersions[i] = GCS paths for piece i, oldest→newest
+  wallRenderVersions: string[];    // GCS paths for wall renders, oldest→newest
+  finalizedAt: string | null;      // null = draft; ISO date string = finalized
+  pieceRegenerationCount: number;  // incremented per regeneration call
+  createdAt: string;
+}
