@@ -58,6 +58,7 @@ POST /api/generate/images
 | `services/descriptionService.ts` | GPT-4o-mini structured output via openai SDK + Zod |
 | `services/imageService.ts` | Gemini image generation (piece images + wall render) |
 | `services/generationService.ts` | Orchestrates full pipeline, enforces 3-generation history cap |
+| `services/shoppingService.ts` | Builds Google Shopping search URLs from PieceDescription fields |
 | `routes/generate.ts` | POST /descriptions, POST /images |
 | `routes/history.ts` | GET / (last 3), GET /:id |
 | `routes/user.ts` | GET /profile |
@@ -195,6 +196,6 @@ POST /api/generate/images
 
 ## Output Formats
 
-- **Descriptions:** JSON array of `PieceDescription` — `{title, description, medium, dimensions, placement}`
+- **Descriptions:** JSON array of `PieceDescription` — `{title, description, medium, dimensions, placement, type, position, frameRecommendation?, mountingRequirements?}`
 - **Images:** Base64 PNG from Gemini → decoded to `Buffer` → uploaded to GCS → signed URL returned
 - **Wall render:** Same as images, aspect ratio 16:9

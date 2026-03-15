@@ -1,13 +1,13 @@
 # GenWallDecor — Project State
 
-> Last updated: 2026-03-14
-> Branch: `main` (all work committed on main)
+> Last updated: 2026-03-15
+> Branch: `feature/shopping-links-download-objects` (awaiting merge to main)
 
 ---
 
 ## Current Focus
 
-Phase 9 complete. No active work item.
+Shopping links + piece type feature complete on `feature/shopping-links-download-objects`, awaiting merge.
 
 ---
 
@@ -23,23 +23,29 @@ App live on Cloud Run + Vercel.
 
 ### Phase 9: Admin Time-Series Charts ✅ DONE (committed to main 2026-03-11)
 
+### Phase 10: Shopping Links, Download, Piece Classification ✅ DONE (on `feature/shopping-links-download-objects`)
+
 All 7 tasks complete. Backend timeseries endpoint + Recharts charts (CallVolume, TokenBreakdown, Cost) + DateRangeSelector + wired into admin dashboard.
 
 ---
 
 ## Test Status
 
-- **Backend:** 59 tests passing, 13 suites, 0 failures
+- **Backend:** 71 tests passing, 14 suites, 0 failures
 - **Frontend:** No test framework (build validation only — all 8 static pages generate cleanly)
 
 ---
 
-## Recent Session (2026-03-14)
+## Recent Session (2026-03-15)
 
-- Admin timeseries charts: 3 bug fixes
-  1. `DateRangeSelector`: replaced `toISOString().slice(0,10)` with `localDateStr()` (UTC date ≠ local date in UTC+ timezones)
-  2. Chart components: switched to `dynamic(..., { ssr: false })` — static prerender froze `getDefaultRange` at build time
-  3. Backend zero-fill loop + query bound: replaced `setDate(getDate()+1)` with `setUTCDate(getUTCDate()+1)` — local timezone caused loop to exit before writing the last day's bucket
+- Shopping links, piece type classification, frameless images, interactive dot overlay
+  1. Extended `PieceDescription` with `type`, `position`, `frameRecommendation`, `mountingRequirements`
+  2. Added `ShoppingService` — builds Google Shopping search URLs per piece type
+  3. Updated `DescriptionService` Zod schema and prompt for new fields (used `.nullable()` not `.optional()` for OpenAI structured output compatibility)
+  4. Updated Gemini piece image prompt to generate frameless artwork
+  5. `GET /api/history/:id` now includes `links` in each piece
+  6. `PieceGallery` details panel now shows shopping/download links per piece type
+  7. Wall render page has interactive dot overlay at each piece's position
 
 ---
 
