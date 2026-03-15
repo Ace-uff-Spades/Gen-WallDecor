@@ -67,7 +67,7 @@ describe('DescriptionService', () => {
     const previousDescriptions = [
       { title: 'Desert Sunset', description: 'A warm painting', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
       { title: 'Woven Tapestry', description: 'A textured wall hanging', medium: 'Fiber art', dimensions: '18x24', placement: 'Left side' },
-    ];
+    ] as any;
     const prompt = service.buildPrompt(preferences, undefined, previousDescriptions);
     expect(prompt).toContain('Desert Sunset');
     expect(prompt).toContain('Woven Tapestry');
@@ -77,7 +77,7 @@ describe('DescriptionService', () => {
   it('buildPrompt with previousDescriptions and feedback labels feedback correctly', () => {
     const previousDescriptions = [
       { title: 'Desert Sunset', description: 'A warm painting', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
-    ];
+    ] as any;
     const prompt = service.buildPrompt(preferences, 'more blue', previousDescriptions);
     expect(prompt).toContain('more blue');
     expect(prompt).toContain('User feedback:');

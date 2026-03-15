@@ -19,6 +19,8 @@ describe('ImageService', () => {
     medium: 'Canvas print',
     dimensions: '24x36 inches',
     placement: 'Center wall',
+    type: 'poster',
+    position: { x: 50, y: 40 },
   };
 
   beforeEach(() => {

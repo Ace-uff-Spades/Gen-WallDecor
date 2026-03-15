@@ -101,6 +101,6 @@ Provide exactly 4-6 pieces that work together as a curated collection.`;
       throw new Error('Failed to parse description response');
     }
 
-    return parsed.pieces;
+    return parsed.pieces as unknown as PieceDescription[];
   }
 }

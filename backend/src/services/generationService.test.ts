@@ -74,7 +74,7 @@ describe('GenerationService', () => {
   it('generateDescriptions passes previousDescriptions to DescriptionService', async () => {
     const previousDescriptions = [
       { title: 'Art 1', description: 'Desc 1', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
-    ];
+    ] as any;
     await service.generateDescriptions(preferences, 'more blue', previousDescriptions);
     expect(mockDescriptionService.prototype.generateDescriptions).toHaveBeenCalledWith(
       preferences,
@@ -97,7 +97,7 @@ describe('GenerationService', () => {
   it('generateImages forwards userId to ImageService', async () => {
     const descriptions = [
       { title: 'Art 1', description: 'Desc 1', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
-    ];
+    ] as any;
     await service.generateImages('user123', preferences, descriptions);
     expect(mockImageService.prototype.generatePieceImage).toHaveBeenCalledWith(
       expect.objectContaining({ title: 'Art 1' }),
@@ -115,7 +115,7 @@ describe('GenerationService', () => {
   it('generateImages creates images and uploads to GCS', async () => {
     const descriptions = [
       { title: 'Art 1', description: 'Desc 1', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
-    ];
+    ] as any;
 
     const result = await service.generateImages('user123', preferences, descriptions);
     expect(result.generationId).toBeDefined();
