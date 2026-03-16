@@ -16,7 +16,9 @@ historyRouter.get('/', async (req: Request, res: Response) => {
     const withUrls = await Promise.all(
       recent.map(async (gen: any) => ({
         ...gen,
-        wallRenderUrl: gen.wallRenderRef ? await storageService.getSignedUrl(gen.wallRenderRef) : null,
+        wallRenderUrl: gen.wallRenderVersions?.length
+          ? await storageService.getSignedUrl(gen.wallRenderVersions[gen.wallRenderVersions.length - 1])
+          : null,
       }))
     );
     res.json({ generations: withUrls });
@@ -38,7 +40,9 @@ historyRouter.get('/:id/pieces/:pieceIndex/download-url', async (req: Request<{ 
       return;
     }
     const pieceIndex = parseInt(req.params.pieceIndex, 10);
-    const imageRef = (generation as any).imageRefs?.[pieceIndex];
+    const pieceVersions = (generation as any).pieceVersions as string[][] | undefined;
+    const versions = pieceVersions?.[pieceIndex];
+    const imageRef = versions ? versions[versions.length - 1] : undefined;
     if (!imageRef) {
       res.status(404).json({ error: 'Piece not found' });
       return;
@@ -63,10 +67,13 @@ historyRouter.get('/:id', async (req: Request<{ id: string }>, res: Response) =>
       return;
     }
     const data = generation as any;
-    const pieceUrls = data.imageRefs
-      ? await Promise.all(data.imageRefs.map((ref: string) => storageService.getSignedUrl(ref)))
+    const currentPieceRefs: string[] = data.pieceVersions
+      ? (data.pieceVersions as string[][]).map(versions => versions[versions.length - 1])
       : [];
-    const wallRenderUrl = data.wallRenderRef ? await storageService.getSignedUrl(data.wallRenderRef) : null;
+    const pieceUrls = await Promise.all(currentPieceRefs.map(ref => storageService.getSignedUrl(ref)));
+    const wallRenderUrl = data.wallRenderVersions?.length
+      ? await storageService.getSignedUrl((data.wallRenderVersions as string[])[(data.wallRenderVersions as string[]).length - 1])
+      : null;
     const pieces = pieceUrls.map((imageUrl: string, i: number) => {
       const desc = data.descriptions?.[i];
       const links = desc ? shoppingService.getLinksForPiece(desc) : null;

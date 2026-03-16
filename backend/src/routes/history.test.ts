@@ -42,8 +42,8 @@ const mockGeneration = {
     { title: 'Sunset', description: 'A warm watercolor sunset', medium: 'Watercolor', dimensions: '18" x 24"', placement: 'Center wall' },
     { title: 'Forest', description: 'Dense forest in oils', medium: 'Oil on canvas', dimensions: '12" x 16"', placement: 'Left wall' },
   ],
-  imageRefs: ['gen-1/piece-0.png', 'gen-1/piece-1.png'],
-  wallRenderRef: 'gen-1/wall-render.png',
+  pieceVersions: [['gen-1/piece-0.png'], ['gen-1/piece-1.png']],
+  wallRenderVersions: ['gen-1/wall-render.png'],
   createdAt: '2026-03-07T00:00:00.000Z',
 };
 
@@ -101,8 +101,8 @@ describe('GET /api/history/:id', () => {
         position: { x: 50, y: 40 },
         frameRecommendation: { material: 'wood', color: 'oak', style: 'rustic' },
       }],
-      imageRefs: ['generations/gen1/piece-0.png'],
-      wallRenderRef: 'generations/gen1/wall-render.png',
+      pieceVersions: [['generations/gen1/piece-0.png']],
+      wallRenderVersions: ['generations/gen1/wall-render.png'],
     });
     mockGetSignedUrl.mockResolvedValue('https://signed.url');
 
