@@ -2,7 +2,7 @@ import { getDb } from '../config/firebase';
 import { DescriptionService } from './descriptionService';
 import { ImageService, GeneratedImage } from './imageService';
 import { StorageService } from './storageService';
-import { PieceDescription, UserPreferences } from '../types';
+import { PieceDescription, UserPreferences, GenerationDocument } from '../types';
 
 export interface GenerationResult {
   generationId: string;
@@ -91,6 +91,50 @@ export class GenerationService {
     );
 
     return { generationId: genId, pieceUrls, wallRenderUrl: wallUrl };
+  }
+
+  async regeneratePieces(
+    userId: string,
+    generationId: string,
+    pieces: { pieceIndex: number; description: string }[],
+  ): Promise<{ pieceVersions: string[][]; pieceRegenerationCount: number }> {
+    const db = getDb();
+    const doc = await db.collection('generations').doc(generationId).get();
+    if (!doc.exists) throw new Error('Generation not found');
+    const data = doc.data() as GenerationDocument;
+
+    if (data.userId !== userId) throw new Error('Unauthorized');
+    if (data.finalizedAt !== null) throw new Error('Generation is finalized');
+
+    const maxRegen = parseInt(process.env.MAX_PIECE_REGENERATIONS_PER_DRAFT ?? '20');
+    if (data.pieceRegenerationCount + pieces.length > maxRegen) {
+      throw new Error('Piece regeneration limit reached');
+    }
+
+    const updatedPieceVersions = data.pieceVersions.map(v => [...v]);
+    const updatedDescriptions = [...data.descriptions];
+
+    for (const { pieceIndex, description } of pieces) {
+      const pieceDesc: PieceDescription = { ...data.descriptions[pieceIndex], description };
+      const image = await this.imageService.generatePieceImage(pieceDesc, data.style, userId);
+
+      const versionNum = updatedPieceVersions[pieceIndex].length;
+      const path = `generations/${generationId}/piece-${pieceIndex}-v${versionNum}.png`;
+      const buffer = Buffer.from(image.data, 'base64');
+      await this.storageService.uploadBuffer(buffer, path, image.mimeType);
+
+      updatedPieceVersions[pieceIndex].push(path);
+      updatedDescriptions[pieceIndex] = { ...data.descriptions[pieceIndex], description };
+    }
+
+    const newCount = data.pieceRegenerationCount + pieces.length;
+
+    await db.collection('generations').doc(generationId).set(
+      { pieceVersions: updatedPieceVersions, descriptions: updatedDescriptions, pieceRegenerationCount: newCount },
+      { merge: true },
+    );
+
+    return { pieceVersions: updatedPieceVersions, pieceRegenerationCount: newCount };
   }
 
   async getGeneration(genId: string) {
