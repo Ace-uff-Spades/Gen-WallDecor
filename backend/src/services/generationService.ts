@@ -137,6 +137,61 @@ export class GenerationService {
     return { pieceVersions: updatedPieceVersions, pieceRegenerationCount: newCount };
   }
 
+  async regenerateWallRender(
+    userId: string,
+    generationId: string,
+    pieceImageRefs: string[],
+  ): Promise<string[]> {
+    const db = getDb();
+    const doc = await db.collection('generations').doc(generationId).get();
+    if (!doc.exists) throw new Error('Generation not found');
+    const data = doc.data() as GenerationDocument;
+
+    if (data.userId !== userId) throw new Error('Unauthorized');
+
+    const allRefs = data.pieceVersions.flat();
+    for (const ref of pieceImageRefs) {
+      if (!allRefs.includes(ref)) throw new Error('Invalid piece image ref');
+    }
+
+    const wallRender = await this.imageService.generateWallRender(
+      data.descriptions,
+      data.style,
+      data.preferences.roomType,
+      userId,
+    );
+
+    const versionNum = data.wallRenderVersions.length;
+    const wallPath = `generations/${generationId}/wall-render-v${versionNum}.png`;
+    const buffer = Buffer.from(wallRender.data, 'base64');
+    await this.storageService.uploadBuffer(buffer, wallPath, wallRender.mimeType);
+
+    const updatedVersions = [...data.wallRenderVersions, wallPath];
+    await db.collection('generations').doc(generationId).set(
+      { wallRenderVersions: updatedVersions },
+      { merge: true },
+    );
+
+    return updatedVersions;
+  }
+
+  async finalizeGeneration(userId: string, generationId: string): Promise<void> {
+    const db = getDb();
+    const doc = await db.collection('generations').doc(generationId).get();
+    if (!doc.exists) throw new Error('Generation not found');
+    const data = doc.data() as GenerationDocument;
+
+    if (data.userId !== userId) throw new Error('Unauthorized');
+    if (data.finalizedAt !== null) throw new Error('Already finalized');
+
+    await db.collection('generations').doc(generationId).set(
+      { finalizedAt: new Date().toISOString() },
+      { merge: true },
+    );
+
+    await this.enforceHistoryLimit(userId);
+  }
+
   async getGeneration(genId: string) {
     const doc = await getDb().collection('generations').doc(genId).get();
     if (!doc.exists) return null;

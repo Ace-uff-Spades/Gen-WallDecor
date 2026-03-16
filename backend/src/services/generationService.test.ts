@@ -267,6 +267,121 @@ describe('GenerationService', () => {
     });
   });
 
+  describe('regenerateWallRender', () => {
+    const baseGenData = {
+      userId: 'user123',
+      style: 'Bohemian',
+      preferences: { style: 'Bohemian', colorScheme: ['warm tones'], frameMaterial: 'wood', roomType: 'living room' },
+      descriptions: [
+        { title: 'Art 1', description: 'Desc 1', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
+      ],
+      pieceVersions: [['generations/gen1/piece-0-v0.png', 'generations/gen1/piece-0-v1.png']],
+      wallRenderVersions: ['generations/gen1/wall-render-v0.png'],
+      finalizedAt: null,
+      pieceRegenerationCount: 1,
+    };
+
+    function setupDocMock(data: object) {
+      const mockSet = jest.fn().mockResolvedValue(undefined);
+      const { getDb } = require('../config/firebase');
+      getDb.mockReturnValue({
+        collection: jest.fn().mockReturnValue({
+          doc: jest.fn().mockReturnValue({
+            get: jest.fn().mockResolvedValue({ exists: true, data: () => data }),
+            set: mockSet,
+            delete: jest.fn(),
+          }),
+          where: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          get: jest.fn().mockResolvedValue({ docs: [] }),
+        }),
+      });
+      return mockSet;
+    }
+
+    it('generates new wall render and appends to wallRenderVersions', async () => {
+      const mockSet = setupDocMock(baseGenData);
+      service = new GenerationService();
+
+      await service.regenerateWallRender('user123', 'gen1', ['generations/gen1/piece-0-v1.png']);
+
+      expect(mockImageService.prototype.generateWallRender).toHaveBeenCalledTimes(1);
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          wallRenderVersions: [
+            'generations/gen1/wall-render-v0.png',
+            'generations/gen1/wall-render-v1.png',
+          ],
+        }),
+        { merge: true },
+      );
+    });
+
+    it('uses current versions — validates pieceImageRefs belong to this generation', async () => {
+      setupDocMock(baseGenData);
+      service = new GenerationService();
+
+      await expect(
+        service.regenerateWallRender('user123', 'gen1', ['generations/other-gen/piece-0-v0.png'])
+      ).rejects.toThrow('Invalid piece image ref');
+    });
+
+    it('throws if caller does not own the generation', async () => {
+      setupDocMock(baseGenData);
+      service = new GenerationService();
+
+      await expect(
+        service.regenerateWallRender('other-user', 'gen1', ['generations/gen1/piece-0-v0.png'])
+      ).rejects.toThrow('Unauthorized');
+    });
+  });
+
+  describe('finalizeGeneration', () => {
+    function setupDocMock(data: object, mockSet?: jest.Mock) {
+      const set = mockSet ?? jest.fn().mockResolvedValue(undefined);
+      const { getDb } = require('../config/firebase');
+      getDb.mockReturnValue({
+        collection: jest.fn().mockReturnValue({
+          doc: jest.fn().mockReturnValue({
+            get: jest.fn().mockResolvedValue({ exists: true, data: () => data }),
+            set,
+            delete: jest.fn(),
+          }),
+          where: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          get: jest.fn().mockResolvedValue({ docs: [] }),
+        }),
+      });
+      return set;
+    }
+
+    it('sets finalizedAt on the generation document', async () => {
+      const mockSet = setupDocMock({ userId: 'user123', finalizedAt: null });
+      service = new GenerationService();
+
+      await service.finalizeGeneration('user123', 'gen1');
+
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({ finalizedAt: expect.any(String) }),
+        { merge: true },
+      );
+    });
+
+    it('throws if already finalized', async () => {
+      setupDocMock({ userId: 'user123', finalizedAt: '2026-01-01T00:00:00.000Z' });
+      service = new GenerationService();
+
+      await expect(service.finalizeGeneration('user123', 'gen1')).rejects.toThrow('Already finalized');
+    });
+
+    it('throws if caller does not own the generation', async () => {
+      setupDocMock({ userId: 'user123', finalizedAt: null });
+      service = new GenerationService();
+
+      await expect(service.finalizeGeneration('other-user', 'gen1')).rejects.toThrow('Unauthorized');
+    });
+  });
+
   it('enforceHistoryLimit only evicts finalized generations and uses MAX_FINALIZED_GENERATIONS env var', async () => {
     process.env.MAX_FINALIZED_GENERATIONS = '2';
 
