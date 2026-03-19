@@ -16,6 +16,8 @@ function GenerateContent() {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState('');
+  const [generationId, setGenerationId] = useState<string | null>(null);
+  const [regeneratingIndex, setRegeneratingIndex] = useState<number | null>(null);
 
   const preferences = {
     style: searchParams.get('style') || '',
@@ -56,6 +58,18 @@ function GenerateContent() {
   const handleUpdateDescription = (index: number, updated: PieceDescription) => {
     setDescriptions((prev) => prev.map((d, i) => (i === index ? updated : d)));
   };
+
+  async function handleRegeneratePiece(pieceIndex: number) {
+    if (!generationId) return;
+    setRegeneratingIndex(pieceIndex);
+    try {
+      await api.regeneratePiece(generationId, pieceIndex, descriptions[pieceIndex].description);
+    } catch (err) {
+      console.error('Regenerate piece failed:', err);
+    } finally {
+      setRegeneratingIndex(null);
+    }
+  }
 
   const handleGenerateImages = async () => {
     setGenerating(true);
@@ -122,12 +136,22 @@ function GenerateContent() {
 
       <div className="mt-8 space-y-4">
         {descriptions.map((desc, i) => (
-          <DescriptionCard
-            key={i}
-            piece={desc}
-            index={i}
-            onUpdate={(updated) => handleUpdateDescription(i, updated)}
-          />
+          <div key={i}>
+            <DescriptionCard
+              piece={desc}
+              index={i}
+              onUpdate={(updated) => handleUpdateDescription(i, updated)}
+            />
+            {generationId && (
+              <button
+                onClick={() => handleRegeneratePiece(i)}
+                disabled={regeneratingIndex !== null}
+                className="mt-2 text-sm underline text-blue-600 disabled:opacity-50"
+              >
+                {regeneratingIndex === i ? 'Regenerating…' : 'Regenerate this piece'}
+              </button>
+            )}
+          </div>
         ))}
       </div>
 

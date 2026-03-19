@@ -54,4 +54,10 @@ export const api = {
 
   getPieceDownloadUrl: (generationId: string, pieceIndex: number) =>
     apiRequest(`/api/history/${generationId}/pieces/${pieceIndex}/download-url`),
+
+  regeneratePiece: (generationId: string, pieceIndex: number, description: string) =>
+    apiRequest('/api/generate/pieces', {
+      method: 'POST',
+      body: JSON.stringify({ generationId, pieces: [{ pieceIndex, description }] }),
+    }),
 };
