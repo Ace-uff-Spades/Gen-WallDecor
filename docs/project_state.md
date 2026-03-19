@@ -1,13 +1,13 @@
 # GenWallDecor — Project State
 
-> Last updated: 2026-03-15
+> Last updated: 2026-03-18
 > Branch: `main` (all work committed on main)
 
 ---
 
 ## Current Focus
 
-Phase 10 complete. No active work item.
+Phase 11 complete. No active work item.
 
 ---
 
@@ -29,12 +29,29 @@ App live on Cloud Run + Vercel.
 
 ## Test Status
 
-- **Backend:** 71 tests passing, 14 suites, 0 failures
+- **Backend:** 97 tests passing, 16 suites, 0 failures
 - **Frontend:** No test framework (build validation only — all 8 static pages generate cleanly)
 
 ---
 
-## Recent Session (2026-03-15)
+### Phase 11: Regenerate Individual Pictures ✅ DONE (committed to main 2026-03-18)
+
+## Recent Sessions
+
+### Session (2026-03-18)
+
+- Regenerate individual pictures with versioning
+  1. Extended `GenerationDocument` schema: `pieceVersions: string[][]`, `wallRenderVersions: string[]`, `finalizedAt`, `pieceRegenerationCount`
+  2. `GenerationService` updated to store versioned GCS paths (`piece-${i}-v0.png`, `wall-render-v0.png`)
+  3. `enforceHistoryLimit` now only evicts finalized generations (not drafts), controlled by `MAX_FINALIZED_GENERATIONS` env var
+  4. Added `regeneratePieces`, `regenerateWallRender`, `finalizeGeneration` to GenerationService
+  5. Created `routes/regenerate.ts` (POST /api/generate/pieces + POST /api/generate/wall-render)
+  6. Created `routes/generations.ts` (POST /api/generations/:id/finalize)
+  7. Created `backend/scripts/migrate-generation-schema.ts` migration script
+  8. Wall page: multi-select checkboxes, version navigation (prev/next), regenerate selected, update wall render, finalize controls
+  9. PieceGallery: checkbox overlay and version nav arrows per piece
+
+### Session (2026-03-15)
 
 - Shopping links, piece type classification, frameless images, interactive dot overlay
   1. Extended `PieceDescription` with `type`, `position`, `frameRecommendation`, `mountingRequirements`

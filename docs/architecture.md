@@ -1,6 +1,6 @@
 # GenWallDecor — Architecture
 
-> Last updated: 2026-02-28
+> Last updated: 2026-03-18
 
 ---
 
@@ -102,6 +102,9 @@ POST /api/generate/images
 | GET | `/api/admin/usage` | Required + admin UID check | LLM usage/cost dashboard data (queries Langfuse) |
 | GET | `/api/admin/usage/timeseries` | Required + admin UID check | Daily-bucketed usage (from/to YYYY-MM-DD params) |
 | GET | `/api/history/:id/pieces/:pieceIndex/download-url` | Required + ownership | 10-min signed URL for piece image download |
+| POST | `/api/generate/pieces` | Required | Regenerate individual pieces (versioned) |
+| POST | `/api/generate/wall-render` | Required | Regenerate wall render with selected piece versions |
+| POST | `/api/generations/:id/finalize` | Required | Finalize a generation (locks it, enforces history limit) |
 
 ---
 
