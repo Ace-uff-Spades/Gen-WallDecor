@@ -60,4 +60,19 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ generationId, pieces: [{ pieceIndex, description }] }),
     }),
+
+  regeneratePieces: (generationId: string, pieces: { pieceIndex: number; description: string }[]): Promise<{ pieceVersions: string[][]; pieceRegenerationCount: number }> =>
+    apiRequest('/api/generate/pieces', {
+      method: 'POST',
+      body: JSON.stringify({ generationId, pieces }),
+    }),
+
+  regenerateWallRender: (generationId: string, pieceImageRefs: string[]): Promise<{ wallRenderVersions: string[] }> =>
+    apiRequest('/api/generate/wall-render', {
+      method: 'POST',
+      body: JSON.stringify({ generationId, pieceImageRefs }),
+    }),
+
+  finalizeGeneration: (generationId: string): Promise<{ success: boolean }> =>
+    apiRequest(`/api/generations/${generationId}/finalize`, { method: 'POST' }),
 };

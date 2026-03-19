@@ -16,6 +16,7 @@ interface GenerationData {
     wallDimensions?: { width: number; height: number };
   };
   wallRenderUrl: string;
+  wallRenderVersions?: string[];
   pieces: {
     title: string;
     imageUrl: string;
@@ -32,6 +33,8 @@ interface GenerationData {
       mountingUrls: { name: string; url: string }[];
     };
   }[];
+  pieceVersions?: string[][];
+  finalizedAt?: string;
   createdAt: string;
 }
 
@@ -46,11 +49,27 @@ export default function WallViewPage() {
   const [feedback, setFeedback] = useState('');
   const [openDotIndex, setOpenDotIndex] = useState<number | null>(null);
 
+  const [selectedPieces, setSelectedPieces] = useState<Set<number>>(new Set());
+  const [currentVersionIndexes, setCurrentVersionIndexes] = useState<number[]>([]);
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const [isUpdatingWallRender, setIsUpdatingWallRender] = useState(false);
+  const [isFinalized, setIsFinalized] = useState(false);
+  const [pieceRegenerationCount, setPieceRegenerationCount] = useState(0);
+
   useEffect(() => {
     async function fetchGeneration() {
       try {
         const result = await api.getGeneration(id);
         setData(result);
+        setCurrentVersionIndexes(
+          result.pieces.map((_: any, i: number) => {
+            const versions = result.pieceVersions?.[i];
+            return versions ? versions.length - 1 : 0;
+          })
+        );
+        if (result.finalizedAt) {
+          setIsFinalized(true);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load generation');
       } finally {
@@ -67,6 +86,77 @@ export default function WallViewPage() {
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
   }, [openDotIndex]);
+
+  function togglePieceSelection(index: number) {
+    setSelectedPieces(prev => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  }
+
+  function navigateVersion(pieceIndex: number, delta: number) {
+    setCurrentVersionIndexes(prev => {
+      const next = [...prev];
+      const versions = data?.pieceVersions?.[pieceIndex];
+      if (!versions) return next;
+      next[pieceIndex] = Math.max(0, Math.min(versions.length - 1, next[pieceIndex] + delta));
+      return next;
+    });
+  }
+
+  async function handleRegenerateSelected() {
+    if (selectedPieces.size === 0 || !data) return;
+    setIsRegenerating(true);
+    try {
+      const pieces = Array.from(selectedPieces).map(i => ({
+        pieceIndex: i,
+        description: data.pieces[i].description ?? '',
+      }));
+      const result = await api.regeneratePieces(id, pieces);
+      setData(prev => prev ? { ...prev, pieceVersions: result.pieceVersions } : prev);
+      setPieceRegenerationCount(result.pieceRegenerationCount);
+      setCurrentVersionIndexes(prev => {
+        const next = [...prev];
+        for (const i of selectedPieces) {
+          next[i] = result.pieceVersions[i].length - 1;
+        }
+        return next;
+      });
+      setSelectedPieces(new Set());
+    } catch (err) {
+      console.error('Regenerate failed:', err);
+    } finally {
+      setIsRegenerating(false);
+    }
+  }
+
+  async function handleUpdateWallRender() {
+    if (!data) return;
+    setIsUpdatingWallRender(true);
+    try {
+      const pieceImageRefs = (data.pieceVersions ?? []).map(
+        (versions: string[], i: number) => versions[currentVersionIndexes[i]] ?? versions[versions.length - 1]
+      );
+      const result = await api.regenerateWallRender(id, pieceImageRefs);
+      setData(prev => prev ? { ...prev, wallRenderVersions: result.wallRenderVersions } : prev);
+    } catch (err) {
+      console.error('Wall render update failed:', err);
+    } finally {
+      setIsUpdatingWallRender(false);
+    }
+  }
+
+  async function handleFinalize() {
+    if (!data) return;
+    try {
+      await api.finalizeGeneration(id);
+      setIsFinalized(true);
+    } catch (err) {
+      console.error('Finalize failed:', err);
+    }
+  }
 
   const handleRetry = () => {
     const prefs = data!.preferences;
@@ -97,6 +187,12 @@ export default function WallViewPage() {
     );
   }
 
+  // Use the latest wall render version if available, otherwise fall back to wallRenderUrl
+  const wallRenderSrc =
+    data.wallRenderVersions && data.wallRenderVersions.length > 0
+      ? data.wallRenderVersions[data.wallRenderVersions.length - 1]
+      : data.wallRenderUrl;
+
   return (
     <div className="py-10">
       {/* Constrained: heading + wall render */}
@@ -107,7 +203,7 @@ export default function WallViewPage() {
         <div className="mt-6 overflow-hidden rounded-2xl border border-secondary/60">
           <div className="relative inline-block w-full">
             <img
-              src={data.wallRenderUrl}
+              src={wallRenderSrc}
               alt={`${data.style} wall render`}
               className="w-full object-cover"
             />
@@ -175,6 +271,38 @@ export default function WallViewPage() {
             })}
           </div>
         </div>
+
+        {/* Regeneration controls */}
+        {!isFinalized && (
+          <div className="flex flex-wrap gap-3 items-center mt-4 mb-2">
+            <button
+              onClick={handleRegenerateSelected}
+              disabled={selectedPieces.size === 0 || isRegenerating}
+              className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium disabled:opacity-50"
+            >
+              {isRegenerating ? 'Regenerating\u2026' : `Regenerate Selected (${selectedPieces.size})`}
+            </button>
+            <button
+              onClick={handleUpdateWallRender}
+              disabled={isUpdatingWallRender}
+              className="px-4 py-2 bg-secondary/80 text-text-darker rounded-lg text-sm font-medium disabled:opacity-50"
+            >
+              {isUpdatingWallRender ? 'Updating\u2026' : 'Update Wall Render'}
+            </button>
+            <button
+              onClick={handleFinalize}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium"
+            >
+              Finalize Wall
+            </button>
+            <span className="text-xs text-text-dark">
+              {pieceRegenerationCount} regenerations used
+            </span>
+          </div>
+        )}
+        {isFinalized && (
+          <div className="mt-2 text-sm text-green-700 font-medium">&#10003; Wall finalized</div>
+        )}
       </div>
 
       {/* Full-width: piece gallery */}
@@ -182,7 +310,15 @@ export default function WallViewPage() {
         <h2 className="mb-6 text-xl font-bold text-text-darker">
           Individual Pieces
         </h2>
-        <PieceGallery pieces={data.pieces} generationId={id} />
+        <PieceGallery
+          pieces={data.pieces}
+          generationId={id}
+          selectedPieces={selectedPieces}
+          onToggleSelect={togglePieceSelection}
+          currentVersionIndexes={currentVersionIndexes}
+          pieceVersions={data.pieceVersions}
+          onNavigateVersion={navigateVersion}
+        />
       </div>
 
       {/* Constrained: retry */}

@@ -25,9 +25,22 @@ interface Piece {
 interface PieceGalleryProps {
   pieces: Piece[];
   generationId: string;
+  selectedPieces?: Set<number>;
+  onToggleSelect?: (index: number) => void;
+  currentVersionIndexes?: number[];
+  pieceVersions?: string[][];
+  onNavigateVersion?: (pieceIndex: number, delta: number) => void;
 }
 
-export default function PieceGallery({ pieces, generationId }: PieceGalleryProps) {
+export default function PieceGallery({
+  pieces,
+  generationId,
+  selectedPieces,
+  onToggleSelect,
+  currentVersionIndexes,
+  pieceVersions,
+  onNavigateVersion,
+}: PieceGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selected = pieces[selectedIndex];
 
@@ -47,30 +60,95 @@ export default function PieceGallery({ pieces, generationId }: PieceGalleryProps
     }
   };
 
+  // Resolve the display image for a piece: use the current version if available
+  function resolveImageUrl(piece: Piece, i: number): string {
+    const versions = pieceVersions?.[i];
+    if (!versions || versions.length === 0) return piece.imageUrl;
+    const versionIdx = currentVersionIndexes?.[i] ?? versions.length - 1;
+    return versions[versionIdx] ?? piece.imageUrl;
+  }
+
   return (
     <div className="flex gap-6 items-start">
       {/* Thumbnail grid */}
       <div className="flex-1 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 content-start">
-        {pieces.map((piece, i) => (
-          <button
-            key={`${piece.title}-${i}`}
-            onClick={() => setSelectedIndex(i)}
-            className={`rounded-xl overflow-hidden border-2 text-left transition-colors ${
-              i === selectedIndex
-                ? 'border-primary'
-                : 'border-transparent hover:border-secondary'
-            }`}
-          >
-            <img
-              src={piece.imageUrl}
-              alt={piece.title}
-              className="aspect-square w-full object-cover"
-            />
-            <div className="bg-white px-2 py-1.5">
-              <p className="text-xs font-medium text-text-darker truncate">{piece.title}</p>
+        {pieces.map((piece, i) => {
+          const isSelected = selectedPieces?.has(i) ?? false;
+          const versions = pieceVersions?.[i];
+          const hasMultipleVersions = versions && versions.length > 1;
+          const versionIdx = currentVersionIndexes?.[i] ?? 0;
+          const displayUrl = resolveImageUrl(piece, i);
+
+          return (
+            <div key={`${piece.title}-${i}`} className="relative">
+              <button
+                onClick={() => setSelectedIndex(i)}
+                className={`w-full rounded-xl overflow-hidden border-2 text-left transition-colors ${
+                  i === selectedIndex
+                    ? 'border-primary'
+                    : 'border-transparent hover:border-secondary'
+                }`}
+              >
+                <img
+                  src={displayUrl}
+                  alt={piece.title}
+                  className="aspect-square w-full object-cover"
+                />
+                <div className="bg-white px-2 py-1.5">
+                  <p className="text-xs font-medium text-text-darker truncate">{piece.title}</p>
+                </div>
+              </button>
+
+              {/* Selection checkbox overlay */}
+              {onToggleSelect && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleSelect(i); }}
+                  aria-label={isSelected ? `Deselect ${piece.title}` : `Select ${piece.title}`}
+                  className={`absolute top-1.5 left-1.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                    isSelected
+                      ? 'bg-primary border-primary text-white'
+                      : 'bg-white/80 border-gray-400 hover:border-primary'
+                  }`}
+                >
+                  {isSelected && (
+                    <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </button>
+              )}
+
+              {/* Version navigation arrows */}
+              {hasMultipleVersions && onNavigateVersion && (
+                <div className="absolute bottom-8 left-0 right-0 flex justify-between px-1">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onNavigateVersion(i, -1); }}
+                    disabled={versionIdx === 0}
+                    aria-label="Previous version"
+                    className="w-6 h-6 rounded-full bg-white/90 border border-gray-300 flex items-center justify-center text-gray-700 disabled:opacity-30 hover:bg-white transition-colors"
+                  >
+                    <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
+                      <path d="M7.5 2L4 6l3.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                  <span className="text-[10px] bg-white/90 rounded px-1 self-center text-gray-600">
+                    {versionIdx + 1}/{versions.length}
+                  </span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onNavigateVersion(i, 1); }}
+                    disabled={versionIdx === versions.length - 1}
+                    aria-label="Next version"
+                    className="w-6 h-6 rounded-full bg-white/90 border border-gray-300 flex items-center justify-center text-gray-700 disabled:opacity-30 hover:bg-white transition-colors"
+                  >
+                    <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
+                      <path d="M4.5 2L8 6l-3.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+              )}
             </div>
-          </button>
-        ))}
+          );
+        })}
       </div>
 
       {/* Description panel */}
