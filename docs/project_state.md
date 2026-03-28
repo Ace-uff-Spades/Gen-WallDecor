@@ -1,13 +1,13 @@
 # GenWallDecor — Project State
 
-> Last updated: 2026-03-18
+> Last updated: 2026-03-28
 > Branch: `main` (all work committed on main)
 
 ---
 
 ## Current Focus
 
-Phase 11 complete. No active work item.
+Phase 11 complete. Figma wireframes created as redesign foundation.
 
 ---
 
@@ -37,6 +37,14 @@ App live on Cloud Run + Vercel.
 ### Phase 11: Regenerate Individual Pictures ✅ DONE (committed to main 2026-03-18)
 
 ## Recent Sessions
+
+### Session (2026-03-28)
+
+- Figma wireframes: mid-fi wireframes of all 5 pages (7 frames) as redesign foundation
+  - Spec: `docs/superpowers/specs/2026-03-27-figma-wireframes-design.md`
+  - Plan: `docs/superpowers/plans/2026-03-27-figma-wireframes.md`
+  - Figma file: https://www.figma.com/design/CphSBIwuFQifjwBlS30jsM (4 sections, app color scheme)
+  - Frames: Landing, Create ×3, Generate/Review, Wall View, History
 
 ### Session (2026-03-18)
 
