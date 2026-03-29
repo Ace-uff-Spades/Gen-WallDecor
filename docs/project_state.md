@@ -1,13 +1,13 @@
 # GenWallDecor — Project State
 
-> Last updated: 2026-03-28
+> Last updated: 2026-03-29
 > Branch: `main` (all work committed on main)
 
 ---
 
 ## Current Focus
 
-Phase 11 complete. Figma wireframes created as redesign foundation.
+Phase 12 in progress. Wireframe redesign designed and planned — ready to implement in Figma.
 
 ---
 
@@ -36,7 +36,23 @@ App live on Cloud Run + Vercel.
 
 ### Phase 11: Regenerate Individual Pictures ✅ DONE (committed to main 2026-03-18)
 
+### Phase 12: Wireframe Redesign 🔄 IN PROGRESS
+
+- Design spec approved: `docs/superpowers/specs/2026-03-29-wireframe-redesign-design.md`
+- Implementation plan written: `docs/superpowers/plans/2026-03-29-wireframe-redesign.md`
+- 8 tasks: rebuild all 7 Figma frames + update project state
+- **Not yet executed** — plan ready, awaiting implementation
+
 ## Recent Sessions
+
+### Session (2026-03-29)
+
+- Wireframe redesign brainstorm + design decisions:
+  - Color palette: Cool Slate (#1B3A5C primary, #2E6DA4 accent, #F0F4F8 page bg)
+  - Landing hero: full-bleed dark gradient, bold title bottom-left, 3D room widget top-right
+  - Logged-in nav (Wall View + History): floating icon rail, same bg as page, active = dark pill
+  - Design spec: `docs/superpowers/specs/2026-03-29-wireframe-redesign-design.md`
+  - Plan: `docs/superpowers/plans/2026-03-29-wireframe-redesign.md`
 
 ### Session (2026-03-28)
 
