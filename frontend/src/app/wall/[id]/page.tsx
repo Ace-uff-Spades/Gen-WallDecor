@@ -48,7 +48,6 @@ export default function WallViewPage() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [openDotIndex, setOpenDotIndex] = useState<number | null>(null);
-
   const [selectedPieces, setSelectedPieces] = useState<Set<number>>(new Set());
   const [currentVersionIndexes, setCurrentVersionIndexes] = useState<number[]>([]);
   const [isRegenerating, setIsRegenerating] = useState(false);
@@ -67,9 +66,7 @@ export default function WallViewPage() {
             return versions ? versions.length - 1 : 0;
           })
         );
-        if (result.finalizedAt) {
-          setIsFinalized(true);
-        }
+        if (result.finalizedAt) setIsFinalized(true);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load generation');
       } finally {
@@ -173,183 +170,188 @@ export default function WallViewPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-secondary border-t-primary" />
+      <div className="min-h-screen bg-dark flex items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-dark-secondary border-t-primary" />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-10 text-center">
-        <p className="text-text-dark">{error || 'Generation not found'}</p>
+      <div className="min-h-screen bg-dark flex items-center justify-center">
+        <p className="text-text-light/60 text-sm">{error || 'Generation not found'}</p>
       </div>
     );
   }
 
-  // Use the latest wall render version if available, otherwise fall back to wallRenderUrl
   const wallRenderSrc =
     data.wallRenderVersions && data.wallRenderVersions.length > 0
       ? data.wallRenderVersions[data.wallRenderVersions.length - 1]
       : data.wallRenderUrl;
 
   return (
-    <div className="py-10">
-      {/* Constrained: heading + wall render */}
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        <h1 className="text-2xl font-bold text-text-darker md:text-3xl">
-          Your Wall — {data.style}
-        </h1>
-        <div className="mt-6 overflow-hidden rounded-2xl border border-secondary/60">
-          <div className="relative inline-block w-full">
-            <img
-              src={wallRenderSrc}
-              alt={`${data.style} wall render`}
-              className="w-full object-cover"
-            />
+    <div className="min-h-screen bg-dark pb-16">
+      {/* Zone 1: Hero wall render */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-8">
+        {/* Title */}
+        <p className="font-mono text-[11px] tracking-widest uppercase text-text-light/40 mb-2">
+          Your Wall
+        </p>
+        <h1 className="text-2xl font-bold text-text-light mb-6">{data.style}</h1>
 
-            {/* Interactive piece dots */}
-            {data.pieces.map((piece, i) => {
-              if (!piece.position) return null;
-              const isOpen = openDotIndex === i;
-              return (
-                <div
-                  key={i}
-                  className="absolute"
-                  style={{
-                    left: `${piece.position.x}%`,
-                    top: `${piece.position.y}%`,
-                    transform: 'translate(-50%, -50%)',
-                  }}
-                >
-                  {/* Dot */}
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setOpenDotIndex(isOpen ? null : i); }}
-                    className="w-4 h-4 rounded-full bg-white border-2 border-gray-700 shadow transition-transform hover:scale-125 focus:outline-none"
-                    aria-label={`View links for ${piece.title}`}
-                  />
+        {/* Wall render */}
+        <div className="relative rounded-2xl overflow-hidden">
+          <img
+            src={wallRenderSrc}
+            alt={`${data.style} wall render`}
+            className="w-full object-cover max-h-[520px]"
+          />
 
-                  {/* Popover */}
-                  {isOpen && (
-                    <div
-                      className="absolute z-10 bg-white border border-gray-200 rounded-lg shadow-lg p-3 w-48 text-sm"
-                      style={{ top: '1.5rem', left: '50%', transform: 'translateX(-50%)' }}
-                    >
-                      <p className="font-semibold mb-2">{piece.title}</p>
-                      {piece.type === 'poster' && (
-                        <>
-                          {piece.links?.frameUrl && (
-                            <a href={piece.links.frameUrl} target="_blank" rel="noopener noreferrer" className="block text-blue-600 underline mb-1">
-                              Buy a frame
-                            </a>
-                          )}
-                          {piece.links?.printUrl && (
-                            <a href={piece.links.printUrl} target="_blank" rel="noopener noreferrer" className="block text-blue-600 underline">
-                              Print this poster
-                            </a>
-                          )}
-                        </>
-                      )}
-                      {piece.type === 'object' && (
-                        <>
-                          {piece.links?.objectUrl && (
-                            <a href={piece.links.objectUrl} target="_blank" rel="noopener noreferrer" className="block text-blue-600 underline mb-1">
-                              Buy this piece
-                            </a>
-                          )}
-                          {piece.links?.mountingUrls.map(m => (
-                            <a key={m.name} href={m.url} target="_blank" rel="noopener noreferrer" className="block text-blue-600 underline">
-                              Buy a {m.name}
-                            </a>
-                          ))}
-                        </>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          {/* Interactive piece dots */}
+          {data.pieces.map((piece, i) => {
+            if (!piece.position) return null;
+            const isOpen = openDotIndex === i;
+            return (
+              <div
+                key={i}
+                className="absolute"
+                style={{
+                  left: `${piece.position.x}%`,
+                  top: `${piece.position.y}%`,
+                  transform: 'translate(-50%, -50%)',
+                }}
+              >
+                <button
+                  onClick={(e) => { e.stopPropagation(); setOpenDotIndex(isOpen ? null : i); }}
+                  className="w-3.5 h-3.5 rounded-full bg-primary border-2 border-white shadow-md transition-transform hover:scale-125 focus:outline-none"
+                  aria-label={`View links for ${piece.title}`}
+                />
+                {isOpen && (
+                  <div
+                    className="absolute z-10 bg-white rounded-xl shadow-lg p-4 w-52 text-sm"
+                    style={{ top: '1.5rem', left: '50%', transform: 'translateX(-50%)' }}
+                  >
+                    <p className="font-semibold text-text mb-3">{piece.title}</p>
+                    {piece.type === 'poster' && (
+                      <>
+                        {piece.links?.frameUrl && (
+                          <a href={piece.links.frameUrl} target="_blank" rel="noopener noreferrer"
+                            className="block text-primary hover:text-primary-hover transition-colors mb-1.5 text-sm">
+                            Buy a frame
+                          </a>
+                        )}
+                        {piece.links?.printUrl && (
+                          <a href={piece.links.printUrl} target="_blank" rel="noopener noreferrer"
+                            className="block text-primary hover:text-primary-hover transition-colors text-sm">
+                            Print this poster
+                          </a>
+                        )}
+                      </>
+                    )}
+                    {piece.type === 'object' && (
+                      <>
+                        {piece.links?.objectUrl && (
+                          <a href={piece.links.objectUrl} target="_blank" rel="noopener noreferrer"
+                            className="block text-primary hover:text-primary-hover transition-colors mb-1.5 text-sm">
+                            Buy this piece
+                          </a>
+                        )}
+                        {piece.links?.mountingUrls.map(m => (
+                          <a key={m.name} href={m.url} target="_blank" rel="noopener noreferrer"
+                            className="block text-primary hover:text-primary-hover transition-colors text-sm">
+                            Buy a {m.name}
+                          </a>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        {/* Regeneration controls */}
-        {!isFinalized && (
-          <div className="flex flex-wrap gap-3 items-center mt-4 mb-2">
+        {/* Controls bar */}
+        {!isFinalized ? (
+          <div className="flex flex-wrap items-center gap-3 mt-4">
             <button
               onClick={handleRegenerateSelected}
               disabled={selectedPieces.size === 0 || isRegenerating}
-              className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium disabled:opacity-50"
+              className="rounded-xl border border-white/20 px-4 py-2 text-sm font-medium text-text-light hover:bg-white/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
-              {isRegenerating ? 'Regenerating\u2026' : `Regenerate Selected (${selectedPieces.size})`}
+              {isRegenerating ? 'Regenerating…' : `Regenerate Selected${selectedPieces.size > 0 ? ` (${selectedPieces.size})` : ''}`}
             </button>
             <button
               onClick={handleUpdateWallRender}
               disabled={isUpdatingWallRender}
-              className="px-4 py-2 bg-secondary/80 text-text-darker rounded-lg text-sm font-medium disabled:opacity-50"
+              className="rounded-xl border border-white/20 px-4 py-2 text-sm font-medium text-text-light hover:bg-white/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
-              {isUpdatingWallRender ? 'Updating\u2026' : 'Update Wall Render'}
+              {isUpdatingWallRender ? 'Updating…' : 'Update Wall Render'}
             </button>
             <button
               onClick={handleFinalize}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium"
+              className="rounded-xl bg-primary hover:bg-primary-hover px-4 py-2 text-sm font-semibold text-white transition-colors cursor-pointer"
             >
               Finalize Wall
             </button>
-            <span className="text-xs text-text-dark">
-              {pieceRegenerationCount} regenerations used
-            </span>
+            {pieceRegenerationCount > 0 && (
+              <span className="text-xs text-text-light/40 ml-auto">
+                {pieceRegenerationCount} regenerations used
+              </span>
+            )}
           </div>
-        )}
-        {isFinalized && (
-          <div className="mt-2 text-sm text-green-700 font-medium">&#10003; Wall finalized</div>
+        ) : (
+          <div className="mt-4 flex items-center gap-2">
+            <span className="text-sm font-medium text-green-400">✓ Wall finalized</span>
+          </div>
         )}
       </div>
 
-      {/* Full-width: piece gallery */}
-      <div className="mt-10 px-4 sm:px-6">
-        <h2 className="mb-6 text-xl font-bold text-text-darker">
+      {/* Zone 2: Pieces strip + detail panel */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 mt-10">
+        <p className="font-mono text-[11px] tracking-widest uppercase text-text-light/40 mb-4">
           Individual Pieces
-        </h2>
+        </p>
         <PieceGallery
           pieces={data.pieces}
           generationId={id}
           selectedPieces={selectedPieces}
-          onToggleSelect={togglePieceSelection}
+          onToggleSelect={isFinalized ? undefined : togglePieceSelection}
           currentVersionIndexes={currentVersionIndexes}
           pieceVersions={data.pieceVersions}
           onNavigateVersion={navigateVersion}
         />
       </div>
 
-      {/* Constrained: retry */}
-      <div className="mx-auto mt-10 max-w-5xl px-4 sm:px-6 text-center">
+      {/* Retry section */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 mt-12 text-center">
         {!showFeedback ? (
           <button
             onClick={() => setShowFeedback(true)}
-            className="cursor-pointer rounded-xl bg-secondary/60 px-6 py-3 text-sm font-medium text-text-darker hover:bg-secondary transition-colors"
+            className="rounded-xl border border-white/20 px-6 py-2.5 text-sm font-medium text-text-light/60 hover:text-text-light hover:border-white/40 transition-colors cursor-pointer"
           >
-            Retry with Changes
+            Not happy? Start over with changes
           </button>
         ) : (
-          <div className="mx-auto max-w-lg rounded-2xl border border-secondary/60 bg-white p-6">
-            <p className="text-sm font-medium text-text-darker">What would you change?</p>
+          <div className="mx-auto max-w-lg rounded-2xl bg-dark-secondary p-6 text-left">
+            <p className="text-sm font-medium text-text-light mb-3">What would you change?</p>
             <textarea
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
-              placeholder="e.g., More vibrant colors, larger centerpiece..."
+              placeholder="e.g., More vibrant colors, larger centerpiece…"
               rows={2}
-              className="mt-2 w-full rounded-lg border border-secondary px-3 py-2 text-sm text-text-darker placeholder:text-text-dark/50 focus:border-primary focus:outline-none resize-none"
+              className="w-full rounded-xl border border-white/10 bg-dark px-4 py-2.5 text-sm text-text-light placeholder:text-text-light/30 focus:border-primary focus:outline-none resize-none"
             />
-            <div className="mt-3 flex gap-2 justify-center">
+            <div className="mt-3 flex gap-2 justify-end">
               <button
                 onClick={() => setShowFeedback(false)}
-                className="cursor-pointer rounded-lg px-4 py-2 text-sm text-text-dark hover:bg-secondary/50 transition-colors"
+                className="rounded-lg px-4 py-2 text-sm text-text-light/50 hover:text-text-light transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleRetry}
-                className="cursor-pointer rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity"
+                className="rounded-xl bg-primary hover:bg-primary-hover px-5 py-2 text-sm font-semibold text-white transition-colors cursor-pointer"
               >
                 Regenerate
               </button>

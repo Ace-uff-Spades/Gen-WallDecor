@@ -41,18 +41,18 @@ export default function PieceGallery({
   pieceVersions,
   onNavigateVersion,
 }: PieceGalleryProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const selected = pieces[selectedIndex];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const active = pieces[activeIndex];
 
   const handleDownload = async () => {
     try {
-      const { url } = await api.getPieceDownloadUrl(generationId, selectedIndex);
+      const { url } = await api.getPieceDownloadUrl(generationId, activeIndex);
       const res = await fetch(url);
       const blob = await res.blob();
       const objUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = objUrl;
-      a.download = `${selected.title}.png`;
+      a.download = `${active.title}.png`;
       a.click();
       URL.revokeObjectURL(objUrl);
     } catch (err) {
@@ -60,7 +60,6 @@ export default function PieceGallery({
     }
   };
 
-  // Resolve the display image for a piece: use the current version if available
   function resolveImageUrl(piece: Piece, i: number): string {
     const versions = pieceVersions?.[i];
     if (!versions || versions.length === 0) return piece.imageUrl;
@@ -70,174 +69,160 @@ export default function PieceGallery({
 
   return (
     <div className="flex gap-6 items-start">
-      {/* Thumbnail grid */}
-      <div className="flex-1 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 content-start">
-        {pieces.map((piece, i) => {
-          const isSelected = selectedPieces?.has(i) ?? false;
-          const versions = pieceVersions?.[i];
-          const hasMultipleVersions = versions && versions.length > 1;
-          const versionIdx = currentVersionIndexes?.[i] ?? 0;
-          const displayUrl = resolveImageUrl(piece, i);
+      {/* Horizontal scroll strip */}
+      <div className="flex-1 overflow-x-auto">
+        <div className="flex gap-3 pb-3" style={{ minWidth: 'max-content' }}>
+          {pieces.map((piece, i) => {
+            const isChecked = selectedPieces?.has(i) ?? false;
+            const versions = pieceVersions?.[i];
+            const hasMultipleVersions = versions && versions.length > 1;
+            const versionIdx = currentVersionIndexes?.[i] ?? 0;
+            const displayUrl = resolveImageUrl(piece, i);
 
-          return (
-            <div key={`${piece.title}-${i}`} className="relative">
-              <button
-                onClick={() => setSelectedIndex(i)}
-                className={`w-full rounded-xl overflow-hidden border-2 text-left transition-colors ${
-                  i === selectedIndex
-                    ? 'border-primary'
-                    : 'border-transparent hover:border-secondary'
-                }`}
-              >
-                <img
-                  src={displayUrl}
-                  alt={piece.title}
-                  className="aspect-square w-full object-cover"
-                />
-                <div className="bg-white px-2 py-1.5">
-                  <p className="text-xs font-medium text-text-darker truncate">{piece.title}</p>
-                </div>
-              </button>
-
-              {/* Selection checkbox overlay */}
-              {onToggleSelect && (
+            return (
+              <div key={`${piece.title}-${i}`} className="relative shrink-0 w-40">
                 <button
-                  onClick={(e) => { e.stopPropagation(); onToggleSelect(i); }}
-                  aria-label={isSelected ? `Deselect ${piece.title}` : `Select ${piece.title}`}
-                  className={`absolute top-1.5 left-1.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                    isSelected
-                      ? 'bg-primary border-primary text-white'
-                      : 'bg-white/80 border-gray-400 hover:border-primary'
+                  onClick={() => setActiveIndex(i)}
+                  className={`w-full rounded-xl overflow-hidden border-2 text-left transition-colors ${
+                    i === activeIndex ? 'border-primary' : 'border-transparent'
                   }`}
                 >
-                  {isSelected && (
-                    <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
-                      <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
+                  <img
+                    src={displayUrl}
+                    alt={piece.title}
+                    className="w-40 h-40 object-cover"
+                  />
                 </button>
-              )}
+                <p className="mt-1.5 text-xs text-text-light/60 truncate text-center">
+                  {piece.title}
+                </p>
 
-              {/* Version navigation arrows */}
-              {hasMultipleVersions && onNavigateVersion && (
-                <div className="absolute bottom-8 left-0 right-0 flex justify-between px-1">
+                {/* Selection checkbox */}
+                {onToggleSelect && (
                   <button
-                    onClick={(e) => { e.stopPropagation(); onNavigateVersion(i, -1); }}
-                    disabled={versionIdx === 0}
-                    aria-label="Previous version"
-                    className="w-6 h-6 rounded-full bg-white/90 border border-gray-300 flex items-center justify-center text-gray-700 disabled:opacity-30 hover:bg-white transition-colors"
+                    onClick={(e) => { e.stopPropagation(); onToggleSelect(i); }}
+                    aria-label={isChecked ? `Deselect ${piece.title}` : `Select ${piece.title}`}
+                    className={`absolute top-1.5 left-1.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                      isChecked
+                        ? 'bg-primary border-primary text-white'
+                        : 'bg-dark/60 border-white/40 hover:border-white'
+                    }`}
                   >
-                    <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
-                      <path d="M7.5 2L4 6l3.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                    {isChecked && (
+                      <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
+                        <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
                   </button>
-                  <span className="text-[10px] bg-white/90 rounded px-1 self-center text-gray-600">
-                    {versionIdx + 1}/{versions.length}
-                  </span>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onNavigateVersion(i, 1); }}
-                    disabled={versionIdx === versions.length - 1}
-                    aria-label="Next version"
-                    className="w-6 h-6 rounded-full bg-white/90 border border-gray-300 flex items-center justify-center text-gray-700 disabled:opacity-30 hover:bg-white transition-colors"
-                  >
-                    <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
-                      <path d="M4.5 2L8 6l-3.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-                </div>
-              )}
-            </div>
-          );
-        })}
+                )}
+
+                {/* Version navigation */}
+                {hasMultipleVersions && onNavigateVersion && (
+                  <div className="absolute bottom-8 left-0 right-0 flex justify-between px-1">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onNavigateVersion(i, -1); }}
+                      disabled={versionIdx === 0}
+                      aria-label="Previous version"
+                      className="w-6 h-6 rounded-full bg-dark/70 flex items-center justify-center text-white disabled:opacity-30 hover:bg-dark transition-colors"
+                    >
+                      <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
+                        <path d="M7.5 2L4 6l3.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                    <span className="text-[10px] bg-dark/70 rounded px-1 self-center text-white/70">
+                      {versionIdx + 1}/{versions.length}
+                    </span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onNavigateVersion(i, 1); }}
+                      disabled={versionIdx === versions.length - 1}
+                      aria-label="Next version"
+                      className="w-6 h-6 rounded-full bg-dark/70 flex items-center justify-center text-white disabled:opacity-30 hover:bg-dark transition-colors"
+                    >
+                      <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
+                        <path d="M4.5 2L8 6l-3.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Description panel */}
-      <div className="w-72 lg:w-80 shrink-0 sticky top-24 rounded-2xl border border-secondary/60 bg-white p-5">
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-text-dark">Details</h3>
-        <h4 className="mt-2 font-bold text-text-darker">{selected.title}</h4>
-        {selected.description && (
-          <p className="mt-3 text-sm text-text-dark leading-relaxed">{selected.description}</p>
+      {/* Detail panel */}
+      <div className="w-72 lg:w-80 shrink-0 rounded-2xl bg-dark-secondary p-5 text-text-light">
+        <p className="font-mono text-[10px] tracking-widest uppercase text-text-light/40 mb-2">
+          Details
+        </p>
+        <h4 className="font-bold text-text-light text-base">{active.title}</h4>
+
+        {active.description && (
+          <p className="mt-3 text-sm text-text-light/60 leading-relaxed">{active.description}</p>
         )}
-        {(selected.medium || selected.dimensions || selected.placement) && (
-          <div className="mt-4 space-y-1.5 border-t border-secondary/60 pt-4 text-xs text-text-dark">
-            {selected.medium && (
-              <p><span className="font-medium text-text-darker">Medium:</span> {selected.medium}</p>
+
+        {(active.medium || active.dimensions || active.placement) && (
+          <div className="mt-4 space-y-1.5 border-t border-white/10 pt-4 text-xs text-text-light/50">
+            {active.medium && (
+              <p><span className="font-medium text-text-light/70">Medium:</span> {active.medium}</p>
             )}
-            {selected.dimensions && (
-              <p><span className="font-medium text-text-darker">Dimensions:</span> {selected.dimensions}</p>
+            {active.dimensions && (
+              <p><span className="font-medium text-text-light/70">Dimensions:</span> {active.dimensions}</p>
             )}
-            {selected.placement && (
-              <p><span className="font-medium text-text-darker">Placement:</span> {selected.placement}</p>
+            {active.placement && (
+              <p><span className="font-medium text-text-light/70">Placement:</span> {active.placement}</p>
             )}
           </div>
         )}
-        {/* Download and shopping links */}
-        {selected.type === 'poster' && (
-          <div className="mt-4 space-y-2 border-t border-secondary/60 pt-4">
-            {selected.links?.frameUrl && (
-              <a
-                href={selected.links.frameUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-sm text-blue-600 underline"
-              >
-                Buy a frame — {selected.dimensions}
+
+        {/* Shopping links */}
+        {active.type === 'poster' && (
+          <div className="mt-4 space-y-2 border-t border-white/10 pt-4">
+            <p className="font-mono text-[10px] tracking-widest uppercase text-text-light/40 mb-2">
+              Get This Piece
+            </p>
+            {active.links?.frameUrl && (
+              <a href={active.links.frameUrl} target="_blank" rel="noopener noreferrer"
+                className="block text-sm text-primary hover:text-primary-hover transition-colors">
+                Buy a frame — {active.dimensions}
               </a>
             )}
-            {selected.links?.printUrl && (
-              <a
-                href={selected.links.printUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-sm text-blue-600 underline"
-              >
-                Print this poster ({selected.dimensions})
+            {active.links?.printUrl && (
+              <a href={active.links.printUrl} target="_blank" rel="noopener noreferrer"
+                className="block text-sm text-primary hover:text-primary-hover transition-colors">
+                Print this poster ({active.dimensions})
               </a>
             )}
-            <button
-              onClick={handleDownload}
-              className="block text-sm text-blue-600 underline text-left"
-            >
+            <button onClick={handleDownload}
+              className="block text-sm text-primary hover:text-primary-hover transition-colors text-left cursor-pointer">
               Download artwork (frameless)
             </button>
           </div>
         )}
 
-        {selected.type === 'object' && (
-          <div className="mt-4 space-y-2 border-t border-secondary/60 pt-4">
-            {selected.links?.objectUrl && (
-              <a
-                href={selected.links.objectUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-sm text-blue-600 underline"
-              >
-                Buy this piece — {selected.title}
+        {active.type === 'object' && (
+          <div className="mt-4 space-y-2 border-t border-white/10 pt-4">
+            <p className="font-mono text-[10px] tracking-widest uppercase text-text-light/40 mb-2">
+              Get This Piece
+            </p>
+            {active.links?.objectUrl && (
+              <a href={active.links.objectUrl} target="_blank" rel="noopener noreferrer"
+                className="block text-sm text-primary hover:text-primary-hover transition-colors">
+                Buy this piece — {active.title}
               </a>
             )}
-            {selected.links?.mountingUrls.map(m => (
-              <a
-                key={m.name}
-                href={m.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-sm text-blue-600 underline"
-              >
-                Buy a {m.name} (needed for wall mounting)
+            {active.links?.mountingUrls.map(m => (
+              <a key={m.name} href={m.url} target="_blank" rel="noopener noreferrer"
+                className="block text-sm text-primary hover:text-primary-hover transition-colors">
+                Buy a {m.name}
               </a>
             ))}
           </div>
         )}
 
-        {/* Fallback download for pieces without type info */}
-        {!selected.type && (
-          <button
-            onClick={handleDownload}
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-secondary/60 px-4 py-2 text-sm font-medium text-text-darker hover:bg-secondary transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
+        {!active.type && (
+          <button onClick={handleDownload}
+            className="mt-5 w-full rounded-xl bg-white/10 hover:bg-white/15 px-4 py-2 text-sm font-medium text-text-light transition-colors cursor-pointer">
             Download for print
           </button>
         )}
