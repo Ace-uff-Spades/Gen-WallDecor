@@ -28,6 +28,7 @@
 **Backend:** `backend/src/index.ts` (routes) → specific service/route → `backend/src/types.ts`
 
 **Frontend:** `frontend/src/lib/api.ts` → `frontend/src/app/globals.css` (Tailwind v4 theme) → specific page/component
+**New in Phase 15:** `frontend/src/lib/stylePhotos.ts` (Unsplash photo map), `frontend/src/components/WizardSplitLayout.tsx` (split-screen shell)
 
 **Tests:** failing test file + its implementation file only
 
@@ -49,8 +50,9 @@
 
 ## Implementation State
 
-Phases 1–14 complete on main. App live on Cloud Run + Vercel. 97 backend tests passing.
+Phases 1–14 complete. Phase 15 UI overhaul in progress. App live on Cloud Run + Vercel. 97 backend tests passing.
 Plans: `docs/superpowers/plans/` · Specs: `docs/superpowers/specs/`
+Active plan: `docs/superpowers/plans/2026-04-21-ui-overhaul.md` (15 tasks, 5 done)
 
 ---
 
@@ -67,6 +69,7 @@ TDD strictly: write failing test → run to confirm failure → implement → ru
 - **OpenAI + Zod:** Use `.nullable()` not `.optional()` for structured output fields
 - **GCS signed URLs:** 1-hour expiry — old history image URLs will break
 - **Pencil MCP:** `batch_design` writes to Pencil's app memory, not disk. Always `Cmd+S` before `git commit`
+- **Phase 15 token cleanup:** `bg-secondary/40` opacity variants need case-by-case replacement (not a mechanical swap) — old tokens silently produce no color in Tailwind v4
 
 ---
 

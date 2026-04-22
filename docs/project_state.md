@@ -1,13 +1,15 @@
 # GenWallDecor — Project State
 
-> Last updated: 2026-04-21
+> Last updated: 2026-04-22
 > Branch: `main` (all work committed on main)
 
 ---
 
 ## Current Focus
 
-All phases complete. No active work item.
+**Phase 15: UI Overhaul** — in progress (subagent-driven, 15 tasks)
+Plan: `docs/superpowers/plans/2026-04-21-ui-overhaul.md`
+Spec: `docs/superpowers/specs/2026-04-21-ui-overhaul-design.md`
 
 ---
 
@@ -19,6 +21,7 @@ All phases complete. No active work item.
 - **Phase 12** ✅ Wireframe Redesign — Cool Slate design system, 7 Figma frames
 - **Phase 13** ✅ Landing Page Visual Refinement (2026-04-09)
 - **Phase 14** ✅ Creation Flow Mockups in Pencil — 6 screens (2026-04-21)
+- **Phase 15** 🔄 UI Overhaul — orange/slate design system, split-screen creation flow, full-bleed wall result (in progress)
 
 ---
 
@@ -43,13 +46,18 @@ All phases complete. No active work item.
 
 ## Recent Sessions
 
-### 2026-04-21
-- Added Steps 5 & 6 to Creation Flow in `landing-design.pen` (subagent-driven, 7 tasks)
-- Step 5: split-screen accordion description review; Step 6: full-bleed wall result page
+### 2026-04-22 (Phase 15 — UI Overhaul, in progress)
+Tasks completed so far (subagent-driven):
+- Task 1 ✅ Design system: orange/slate tokens, DM Sans + DM Mono fonts
+- Task 2 ✅ AuthButton: dark navbar styling
+- Task 3 ✅ Navbar: dark slate redesign
+- Task 4 ✅ stylePhotos.ts: 20 Unsplash room photos mapped per style
+- Task 5 ✅ WizardSplitLayout: new split-screen shell component
+- Tasks 6–15: pending (landing page, components, pages, wall result)
 
-### 2026-04-09–13
-- Built `landing-v7.html` room widget redesign; replicated in Pencil
-- Built Creation Flow Steps 1–4 in Pencil
+### 2026-04-21
+- Added Steps 5 & 6 to Creation Flow in `landing-design.pen`
+- Brainstormed + specced + planned Phase 15 UI Overhaul
 
 ---
 
