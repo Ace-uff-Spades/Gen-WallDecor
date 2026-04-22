@@ -4,6 +4,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/useAuth';
+import { getStylePhoto } from '@/lib/stylePhotos';
+import WizardSplitLayout from '@/components/WizardSplitLayout';
 import DescriptionCard, { PieceDescription } from '@/components/DescriptionCard';
 
 function GenerateContent() {
@@ -18,6 +20,7 @@ function GenerateContent() {
   const [feedback, setFeedback] = useState('');
   const [generationId, setGenerationId] = useState<string | null>(null);
   const [regeneratingIndex, setRegeneratingIndex] = useState<number | null>(null);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
   const preferences = {
     style: searchParams.get('style') || '',
@@ -29,12 +32,15 @@ function GenerateContent() {
       : {}),
   };
 
+  const photoUrl = getStylePhoto(preferences.style);
+
   const fetchDescriptions = useCallback(async (feedbackText?: string, previousDescriptions?: PieceDescription[]) => {
     setLoading(true);
     setError(null);
     try {
       const result = await api.generateDescriptions(preferences, feedbackText, previousDescriptions);
       setDescriptions(result.descriptions);
+      setExpandedIndex(0);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate descriptions');
     } finally {
@@ -83,116 +89,112 @@ function GenerateContent() {
     }
   };
 
-  if (authLoading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-secondary border-t-primary" />
-      </div>
-    );
-  }
+  const toggleExpanded = (index: number) => {
+    setExpandedIndex((prev) => (prev === index ? null : index));
+  };
 
-  if (!user) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="text-center max-w-sm px-4">
-          <h2 className="text-xl font-bold text-text-darker">Almost there</h2>
-          <p className="mt-2 text-text-dark">Sign in to generate your wall decor.</p>
+  // Left panel content rendered as children of WizardSplitLayout
+  const leftContent = (() => {
+    if (authLoading) {
+      return (
+        <div className="flex items-center gap-3 py-8">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-primary" />
+          <span className="text-sm text-text-muted">Loading…</span>
+        </div>
+      );
+    }
+
+    if (!user) {
+      return (
+        <div className="py-8">
+          <p className="text-sm text-text-muted mb-4">Sign in to generate your wall decor.</p>
           <button
             onClick={signIn}
-            className="mt-6 cursor-pointer rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
+            className="rounded-xl bg-primary hover:bg-primary-hover px-6 py-2.5 text-sm font-semibold text-white transition-colors cursor-pointer"
           >
             Sign in with Google
           </button>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (loading) {
+    if (loading) {
+      return (
+        <div className="flex items-center gap-3 py-8">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-primary" />
+          <span className="text-sm text-text-muted">Generating descriptions…</span>
+        </div>
+      );
+    }
+
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-secondary border-t-primary" />
-          <p className="mt-4 text-text-dark">Generating descriptions...</p>
-        </div>
-      </div>
-    );
-  }
+      <>
+        {error && (
+          <div className="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
 
-  return (
-    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-      <h1 className="text-2xl font-bold text-text-darker md:text-3xl">
-        Review Your Descriptions
-      </h1>
-      <p className="mt-2 text-text-dark">
-        Edit any description before generating images. Style: <span className="font-medium">{preferences.style}</span>
-      </p>
-
-      {error && (
-        <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
-      )}
-
-      <div className="mt-8 space-y-4">
-        {descriptions.map((desc, i) => (
-          <div key={i}>
+        {/* Accordion */}
+        <div className="space-y-3">
+          {descriptions.map((desc, i) => (
             <DescriptionCard
+              key={i}
               piece={desc}
               index={i}
+              isExpanded={expandedIndex === i}
+              onExpand={() => toggleExpanded(i)}
               onUpdate={(updated) => handleUpdateDescription(i, updated)}
             />
-            {generationId && (
-              <button
-                onClick={() => handleRegeneratePiece(i)}
-                disabled={regeneratingIndex !== null}
-                className="mt-2 text-sm underline text-blue-600 disabled:opacity-50"
-              >
-                {regeneratingIndex === i ? 'Regenerating…' : 'Regenerate this piece'}
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* Regenerate with feedback */}
-      <div className="mt-8 rounded-2xl border border-secondary/60 bg-white p-6">
-        <p className="text-sm font-medium text-text-darker">Want different descriptions?</p>
-        <textarea
-          value={feedback}
-          onChange={(e) => setFeedback(e.target.value)}
-          placeholder="e.g., Make them more colorful, add abstract pieces..."
-          rows={2}
-          className="mt-2 w-full rounded-lg border border-secondary px-3 py-2 text-sm text-text-darker placeholder:text-text-dark/50 focus:border-primary focus:outline-none resize-none"
-        />
-        <button
-          onClick={handleRegenerate}
-          disabled={loading}
-          className="mt-3 cursor-pointer rounded-lg bg-secondary/60 px-5 py-2 text-sm font-medium text-text-darker hover:bg-secondary transition-colors disabled:opacity-40"
-        >
-          Regenerate All
-        </button>
-      </div>
+        {/* Feedback */}
+        <div className="mt-6 rounded-xl border border-border bg-bg p-4">
+          <p className="text-xs font-medium text-text-muted mb-2">Want something different?</p>
+          <textarea
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            placeholder="e.g., Make them more colorful, add abstract pieces…"
+            rows={2}
+            className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text placeholder:text-text-muted focus:border-primary focus:outline-none resize-none"
+          />
+          <button
+            onClick={handleRegenerate}
+            disabled={loading}
+            className="mt-2 cursor-pointer rounded-lg border border-border px-4 py-1.5 text-xs font-medium text-text-muted hover:text-text hover:border-text-muted transition-colors disabled:opacity-40"
+          >
+            Regenerate All
+          </button>
+        </div>
+      </>
+    );
+  })();
 
-      {/* Generate Images CTA */}
-      <div className="mt-8 text-center">
-        <button
-          onClick={handleGenerateImages}
-          disabled={generating || descriptions.length === 0}
-          className="cursor-pointer rounded-2xl bg-primary px-10 py-4 text-lg font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          {generating ? 'Generating Images...' : 'Generate Images'}
-        </button>
-      </div>
-    </div>
+  const canGenerate = !generating && descriptions.length > 0 && !!user && !loading;
+
+  return (
+    <WizardSplitLayout
+      step={3}
+      totalSteps={3}
+      title="Here's what we'll make"
+      subtitle={preferences.style ? `Style: ${preferences.style}` : undefined}
+      photoUrl={photoUrl}
+      onNext={canGenerate ? handleGenerateImages : undefined}
+      onBack={() => router.back()}
+      nextDisabled={!canGenerate}
+      nextLabel={generating ? 'Generating…' : 'Generate Images →'}
+    >
+      {leftContent}
+    </WizardSplitLayout>
   );
 }
 
 export default function GeneratePage() {
   return (
     <Suspense fallback={
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-secondary border-t-primary" />
+      <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 3.5rem)' }}>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary" />
       </div>
     }>
       <GenerateContent />
