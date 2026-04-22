@@ -10,16 +10,16 @@ interface FrameMaterialSelectorProps {
 export default function FrameMaterialSelector({ selected, onChange }: FrameMaterialSelectorProps) {
   return (
     <div>
-      <p className="mb-3 text-sm text-text-dark">Choose a frame material</p>
+      <p className="mb-3 text-sm font-medium text-text">Frame material</p>
       <div className="flex flex-wrap gap-2">
         {FRAME_MATERIALS.map((material) => (
           <button
             key={material}
             onClick={() => onChange(material)}
-            className={`cursor-pointer rounded-xl px-4 py-2 text-sm transition-all ${
+            className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
               selected === material
                 ? 'bg-primary text-white'
-                : 'bg-secondary/40 text-text-dark hover:bg-secondary/70'
+                : 'bg-bg border border-border text-text-muted hover:border-text-muted hover:text-text'
             }`}
           >
             {material}

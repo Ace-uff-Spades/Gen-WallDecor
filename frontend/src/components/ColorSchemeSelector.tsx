@@ -28,18 +28,21 @@ export default function ColorSchemeSelector({ selected, onChange }: ColorSchemeS
 
   return (
     <div>
-      <p className="mb-3 text-sm text-text-dark">
-        Select colors for your wall decor ({selected.length} selected)
+      <p className="mb-3 text-sm font-medium text-text">
+        Color palette
+        <span className="ml-1.5 text-xs text-text-muted font-normal">
+          ({selected.length} selected)
+        </span>
       </p>
       <div className="flex flex-wrap gap-2">
         {PRESET_COLORS.map((color) => (
           <button
             key={color}
             onClick={() => toggle(color)}
-            className={`cursor-pointer rounded-full px-3 py-1.5 text-sm transition-all ${
+            className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
               selected.includes(color)
                 ? 'bg-primary text-white'
-                : 'bg-secondary/40 text-text-dark hover:bg-secondary/70'
+                : 'bg-bg border border-border text-text-muted hover:border-text-muted hover:text-text'
             }`}
           >
             {color}
