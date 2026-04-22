@@ -1,9 +1,0 @@
-{"type":"server-started","port":52538,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:52538","screen_dir":"/Users/abhi/Documents/Coding Projects/GenWallDecor/.superpowers/brainstorm/73807-1774818513/content","state_dir":"/Users/abhi/Documents/Coding Projects/GenWallDecor/.superpowers/brainstorm/73807-1774818513/state"}
-{"type":"screen-added","file":"/Users/abhi/Documents/Coding Projects/GenWallDecor/.superpowers/brainstorm/73807-1774818513/content/color-palette.html"}
-{"type":"screen-added","file":"/Users/abhi/Documents/Coding Projects/GenWallDecor/.superpowers/brainstorm/73807-1774818513/content/hero-layout.html"}
-{"type":"screen-added","file":"/Users/abhi/Documents/Coding Projects/GenWallDecor/.superpowers/brainstorm/73807-1774818513/content/logged-in-nav.html"}
-{"type":"screen-added","file":"/Users/abhi/Documents/Coding Projects/GenWallDecor/.superpowers/brainstorm/73807-1774818513/content/logged-in-nav-v2.html"}
-{"type":"screen-added","file":"/Users/abhi/Documents/Coding Projects/GenWallDecor/.superpowers/brainstorm/73807-1774818513/content/logged-in-nav-v3.html"}
-{"type":"screen-added","file":"/Users/abhi/Documents/Coding Projects/GenWallDecor/.superpowers/brainstorm/73807-1774818513/content/design-summary.html"}
-{"type":"screen-added","file":"/Users/abhi/Documents/Coding Projects/GenWallDecor/.superpowers/brainstorm/73807-1774818513/content/waiting.html"}
-{"type":"server-stopped","reason":"idle timeout"}

@@ -32,6 +32,11 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.*
+
+# tooling artifacts — not project code
+.superpowers/
+UI_Images/
 
 # vercel
 .vercel
