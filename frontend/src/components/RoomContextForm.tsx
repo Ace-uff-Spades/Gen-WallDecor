@@ -18,33 +18,36 @@ export default function RoomContextForm({
   onDimensionsChange,
 }: RoomContextFormProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Room type */}
       <div>
-        <label htmlFor="room-type" className="mb-2 block text-sm font-medium text-text-darker">
-          Room Type
-        </label>
-        <select
-          id="room-type"
-          value={roomType}
-          onChange={(e) => onRoomTypeChange(e.target.value)}
-          className="w-full rounded-xl border border-secondary bg-white px-4 py-3 text-sm text-text-darker focus:border-primary focus:outline-none"
-        >
-          <option value="">Select a room...</option>
+        <p className="mb-3 text-sm font-medium text-text">Room type</p>
+        <div className="flex flex-wrap gap-2">
           {ROOM_TYPES.map((room) => (
-            <option key={room} value={room}>
+            <button
+              key={room}
+              onClick={() => onRoomTypeChange(room)}
+              className={`cursor-pointer rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${
+                roomType === room
+                  ? 'bg-primary text-white'
+                  : 'bg-bg border border-border text-text-muted hover:border-text-muted hover:text-text'
+              }`}
+            >
               {room}
-            </option>
+            </button>
           ))}
-        </select>
+        </div>
       </div>
 
+      {/* Wall dimensions */}
       <div>
-        <p className="mb-2 text-sm font-medium text-text-darker">
-          Wall Dimensions <span className="font-normal text-text-dark">(optional, in feet)</span>
+        <p className="mb-1 text-sm font-medium text-text">
+          Wall dimensions
+          <span className="ml-1.5 text-xs text-text-muted font-normal">(optional, in feet)</span>
         </p>
-        <div className="flex gap-4">
+        <div className="flex gap-4 mt-3">
           <div className="flex-1">
-            <label htmlFor="wall-width" className="mb-1 block text-xs text-text-dark">
+            <label htmlFor="wall-width" className="mb-1 block text-xs text-text-muted">
               Width
             </label>
             <input
@@ -60,11 +63,11 @@ export default function RoomContextForm({
                 )
               }
               placeholder="e.g. 12"
-              className="w-full rounded-xl border border-secondary bg-white px-4 py-3 text-sm text-text-darker focus:border-primary focus:outline-none"
+              className="w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm text-text placeholder:text-text-muted focus:border-primary focus:outline-none"
             />
           </div>
           <div className="flex-1">
-            <label htmlFor="wall-height" className="mb-1 block text-xs text-text-dark">
+            <label htmlFor="wall-height" className="mb-1 block text-xs text-text-muted">
               Height
             </label>
             <input
@@ -80,7 +83,7 @@ export default function RoomContextForm({
                 )
               }
               placeholder="e.g. 9"
-              className="w-full rounded-xl border border-secondary bg-white px-4 py-3 text-sm text-text-darker focus:border-primary focus:outline-none"
+              className="w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm text-text placeholder:text-text-muted focus:border-primary focus:outline-none"
             />
           </div>
         </div>
