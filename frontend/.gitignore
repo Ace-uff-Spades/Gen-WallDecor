@@ -43,4 +43,4 @@ yarn-error.log*
 next-env.d.ts
 
 #images
-/UI_Inspo/*
+UI_Inspo/*
