@@ -1,0 +1,62 @@
+<h2>How should we organize the Figma wireframes?</h2>
+<p class="subtitle">7 frames total: Landing · Create ×3 · Generate · Wall View · History</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Linear Canvas — All frames in one row</h3>
+      <p>All 7 screens laid out left-to-right on a single Figma page in flow order. Simple to navigate, easy to screenshot the whole flow at once.</p>
+      <div style="margin-top:12px; background:#f5f5f5; border-radius:6px; padding:10px; font-size:11px; color:#555; display:flex; gap:6px; align-items:center;">
+        <div style="background:#ddd;border-radius:3px;padding:4px 8px;white-space:nowrap;">Landing</div>
+        <div style="color:#aaa">→</div>
+        <div style="background:#ddd;border-radius:3px;padding:4px 8px;white-space:nowrap;">Create 1</div>
+        <div style="color:#aaa">→</div>
+        <div style="background:#ddd;border-radius:3px;padding:4px 8px;white-space:nowrap;">Create 2</div>
+        <div style="color:#aaa">→</div>
+        <div style="background:#ddd;border-radius:3px;padding:4px 8px;white-space:nowrap;">Create 3</div>
+        <div style="color:#aaa">→</div>
+        <div style="background:#ddd;border-radius:3px;padding:4px 8px;white-space:nowrap;">Generate</div>
+        <div style="color:#aaa">→</div>
+        <div style="background:#ddd;border-radius:3px;padding:4px 8px;white-space:nowrap;">Wall</div>
+        <div style="color:#aaa">→</div>
+        <div style="background:#ddd;border-radius:3px;padding:4px 8px;white-space:nowrap;">History</div>
+      </div>
+      <p style="margin-top:8px; font-size:12px; color:#888;">Best for: quick overview, sharing a single screenshot</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Sectioned Canvas — Grouped by feature area</h3>
+      <p>Frames grouped into labeled sections on one page: <em>Onboarding</em> (Landing), <em>Creation Flow</em> (Create 1–3, Generate), <em>Result</em> (Wall View), <em>Discovery</em> (History). Good for annotating redesign areas by feature.</p>
+      <div style="margin-top:12px; background:#f5f5f5; border-radius:6px; padding:10px; font-size:11px; color:#555; display:flex; gap:8px; flex-wrap:wrap;">
+        <div style="background:#e8f0fe;border-radius:3px;padding:4px 10px;border:1px solid #c5d8fb;">Onboarding<br><span style="color:#888">Landing</span></div>
+        <div style="background:#e8f0fe;border-radius:3px;padding:4px 10px;border:1px solid #c5d8fb;">Creation Flow<br><span style="color:#888">Create 1–3 · Generate</span></div>
+        <div style="background:#e8f0fe;border-radius:3px;padding:4px 10px;border:1px solid #c5d8fb;">Result<br><span style="color:#888">Wall View</span></div>
+        <div style="background:#e8f0fe;border-radius:3px;padding:4px 10px;border:1px solid #c5d8fb;">Discovery<br><span style="color:#888">History</span></div>
+      </div>
+      <p style="margin-top:8px; font-size:12px; color:#888;">Best for: redesign planning, annotating per feature area</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Multi-page Figma File — One Figma page per screen</h3>
+      <p>Each of the 7 screens gets its own Figma page. Max focus per screen, easy to add lots of annotations without clutter. Harder to see the big picture.</p>
+      <div style="margin-top:12px; background:#f5f5f5; border-radius:6px; padding:10px; font-size:11px; color:#555; display:flex; gap:6px; flex-direction:column; width:fit-content;">
+        <div style="background:#ddd;border-radius:3px;padding:3px 8px;">📄 Landing</div>
+        <div style="background:#ddd;border-radius:3px;padding:3px 8px;">📄 Create – Step 1</div>
+        <div style="background:#ddd;border-radius:3px;padding:3px 8px;">📄 Create – Step 2</div>
+        <div style="background:#ddd;border-radius:3px;padding:3px 8px;">📄 ...</div>
+      </div>
+      <p style="margin-top:8px; font-size:12px; color:#888;">Best for: deep per-screen redesign work</p>
+    </div>
+  </div>
+</div>
+
+<p style="margin-top:24px; font-size:13px; color:#666;">
+  <strong>My recommendation: B (Sectioned Canvas)</strong> — grouping by feature area makes it easy to annotate redesign ideas per section without losing the flow context.
+</p>

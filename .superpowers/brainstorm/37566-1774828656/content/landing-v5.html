@@ -1,0 +1,119 @@
+<h2>Landing Page v5 — Real Photo Hero + Cool Slate</h2>
+<p class="subtitle">Real Unsplash photo of gallery wall · Cool Slate palette · One continuous page</p>
+
+<div style="max-width:900px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;">
+<div style="border-radius:12px;overflow:hidden;box-shadow:0 12px 60px rgba(0,0,0,0.28);">
+
+  <!-- ══ SINGLE PAGE WRAPPER ══ -->
+  <div style="position:relative;">
+
+    <!-- ══ HERO — real photo background ══ -->
+    <div style="position:relative;height:520px;overflow:hidden;">
+
+      <!-- Real photo -->
+      <img
+        src="https://images.unsplash.com/photo-1639125470955-faa8f6fef1ab?w=1600&q=85&auto=format&fit=crop"
+        alt="Gallery wall with framed art"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;"
+      />
+
+      <!-- Dark gradient overlay — left side heavy for text, right stays lighter to show photo -->
+      <div style="position:absolute;inset:0;background:linear-gradient(
+        105deg,
+        rgba(11,26,46,0.88) 0%,
+        rgba(15,35,60,0.72) 30%,
+        rgba(20,45,75,0.45) 55%,
+        rgba(20,45,75,0.15) 75%,
+        transparent 90%
+      );"></div>
+
+      <!-- Bottom fade into page bg — bridges photo into below-fold content -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:140px;background:linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(11,26,46,0.5) 40%,
+        #1B3A5C 100%
+      );"></div>
+
+      <!-- ── NAV ── -->
+      <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:18px 44px;">
+        <span style="color:white;font-weight:700;font-size:12px;letter-spacing:3px;">GENWALLDECOR</span>
+        <div style="display:flex;gap:24px;align-items:center;">
+          <span style="color:rgba(255,255,255,0.80);font-size:12px;">History</span>
+          <div style="border:1px solid rgba(255,255,255,0.55);color:white;padding:5px 18px;border-radius:20px;font-size:11px;">Sign In</div>
+        </div>
+      </div>
+
+      <!-- ── Room widget — top right ── -->
+      <div style="position:absolute;top:56px;right:44px;z-index:10;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.22);border-radius:10px;padding:10px 14px;width:148px;backdrop-filter:blur(12px);">
+        <div style="font-size:7px;color:rgba(255,255,255,0.65);letter-spacing:1.8px;margin-bottom:6px;">YOUR ROOM</div>
+        <div style="background:rgba(255,255,255,0.08);border-radius:5px;height:68px;position:relative;">
+          <div style="position:absolute;top:10px;left:10px;right:10px;bottom:0;border:1.5px solid rgba(255,255,255,0.40);border-bottom:none;border-radius:2px 2px 0 0;"></div>
+          <div style="position:absolute;top:18px;left:50%;transform:translateX(-50%);width:34px;height:24px;background:#7EB4D8;border-radius:2px;opacity:0.9;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:14px;background:rgba(255,255,255,0.12);"></div>
+        </div>
+        <div style="font-size:7px;color:#7EB4D8;text-align:center;margin-top:5px;">↑ visualized here</div>
+      </div>
+
+      <!-- ── Hero title — bottom left ── -->
+      <div style="position:absolute;bottom:100px;left:44px;z-index:10;">
+        <div style="font-size:54px;font-weight:900;color:white;line-height:1.0;letter-spacing:-2px;text-shadow:0 2px 28px rgba(0,0,0,0.4);">
+          Design Your<br><span style="color:#7EB4D8;">Perfect Wall</span>
+        </div>
+        <div style="color:rgba(255,255,255,0.78);font-size:13px;margin-top:12px;max-width:340px;line-height:1.65;">
+          AI-powered wall decor that matches your style.
+        </div>
+        <div style="margin-top:22px;">
+          <div style="display:inline-block;background:white;color:#1B3A5C;padding:12px 28px;border-radius:8px;font-size:13px;font-weight:700;box-shadow:0 4px 20px rgba(0,0,0,0.25);">Start Creating</div>
+        </div>
+      </div>
+
+    </div><!-- /hero -->
+
+    <!-- ══ TRANSITION BAND — dark to page bg ══ -->
+    <div style="background:linear-gradient(180deg, #1B3A5C 0%, #2E6DA4 35%, #C8DFEE 70%, #F0F4F8 100%);padding:48px 44px 52px;">
+
+      <!-- How it works label — on the dark/mid part -->
+      <div style="font-size:10px;color:rgba(255,255,255,0.60);letter-spacing:2.5px;font-weight:600;margin-bottom:8px;">HOW IT WORKS</div>
+      <div style="font-size:22px;font-weight:700;color:white;margin-bottom:32px;text-shadow:0 1px 8px rgba(0,0,0,0.2);">Three steps to your perfect wall</div>
+
+      <!-- Cards float on the gradient -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+
+        <div style="background:rgba(255,255,255,0.93);border-radius:14px;padding:22px;box-shadow:0 8px 32px rgba(0,0,0,0.12);">
+          <div style="width:38px;height:38px;background:#EBF2F8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;">🎨</div>
+          <div style="font-size:10px;color:#2E6DA4;font-weight:700;letter-spacing:1px;margin-bottom:5px;">STEP 1</div>
+          <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:6px;">Choose Your Style</div>
+          <div style="font-size:11px;color:#6B7280;line-height:1.5;">Pick from 20 curated decor styles that match your taste.</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.93);border-radius:14px;padding:22px;box-shadow:0 8px 32px rgba(0,0,0,0.12);">
+          <div style="width:38px;height:38px;background:#EBF2F8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;">✏️</div>
+          <div style="font-size:10px;color:#2E6DA4;font-weight:700;letter-spacing:1px;margin-bottom:5px;">STEP 2</div>
+          <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:6px;">Review AI Descriptions</div>
+          <div style="font-size:11px;color:#6B7280;line-height:1.5;">AI creates tailored art descriptions for your wall.</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.93);border-radius:14px;padding:22px;box-shadow:0 8px 32px rgba(0,0,0,0.12);">
+          <div style="width:38px;height:38px;background:#EBF2F8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;">🖼️</div>
+          <div style="font-size:10px;color:#2E6DA4;font-weight:700;letter-spacing:1px;margin-bottom:5px;">STEP 3</div>
+          <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:6px;">See Your Wall</div>
+          <div style="font-size:11px;color:#6B7280;line-height:1.5;">Get a full wall visualization you can refine and finalize.</div>
+        </div>
+
+      </div>
+
+      <!-- CTA banner -->
+      <div style="background:white;border-radius:14px;padding:22px 28px;margin-top:18px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 32px rgba(0,0,0,0.08);border:1px solid #D8E4ED;">
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:3px;">Ready to transform your space?</div>
+          <div style="font-size:12px;color:#6B7280;">It only takes a few minutes to create something beautiful.</div>
+        </div>
+        <div style="background:#1B3A5C;color:white;padding:11px 22px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap;">Get Started →</div>
+      </div>
+
+    </div><!-- /transition band -->
+
+  </div>
+</div>
+</div>

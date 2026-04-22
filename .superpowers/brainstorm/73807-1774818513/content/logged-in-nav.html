@@ -1,0 +1,120 @@
+<h2>How should the left-side nav work on logged-in pages?</h2>
+<p class="subtitle">Wall View and History pages. These replace the top nav bar when signed in.</p>
+
+<div class="cards">
+
+  <!-- Option A: Icon-only rail -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:0; overflow:hidden; border-radius:8px 8px 0 0;">
+      <div style="display:flex; height:200px; background:#F0F4F8;">
+        <!-- Sidebar -->
+        <div style="width:52px; background:#1B3A5C; display:flex; flex-direction:column; align-items:center; padding:12px 0; gap:4px; border-radius:8px 0 0 0;">
+          <div style="color:white; font-size:9px; font-weight:bold; letter-spacing:1px; margin-bottom:8px; writing-mode:vertical-lr; transform:rotate(180deg); opacity:0.5;">GWD</div>
+          <div style="width:36px; height:36px; background:rgba(255,255,255,0.15); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px;">🖼️</div>
+          <div style="font-size:7px; color:rgba(255,255,255,0.5); margin-bottom:6px;">Wall</div>
+          <div style="width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px;">🕐</div>
+          <div style="font-size:7px; color:rgba(255,255,255,0.5); margin-bottom:6px;">History</div>
+          <div style="width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px;">✨</div>
+          <div style="font-size:7px; color:rgba(255,255,255,0.5);">New</div>
+          <div style="flex:1;"></div>
+          <div style="width:28px; height:28px; border-radius:50%; background:#2E6DA4; display:flex; align-items:center; justify-content:center; font-size:11px; color:white; margin-bottom:8px;">A</div>
+        </div>
+        <!-- Main content area -->
+        <div style="flex:1; padding:14px;">
+          <div style="font-size:13px; font-weight:bold; color:#111827; margin-bottom:4px;">Your Wall — Minimalist</div>
+          <div style="background:#C8DFEE; border-radius:6px; height:100px; display:flex; align-items:center; justify-content:center;">
+            <span style="font-size:10px; color:#1B3A5C; opacity:0.6;">[ Wall Render ]</span>
+          </div>
+          <div style="display:flex; gap:6px; margin-top:8px;">
+            <div style="background:white; border:1px solid #D8E4ED; border-radius:4px; padding:4px 8px; font-size:8px; color:#1B3A5C;">Regenerate</div>
+            <div style="background:#1B3A5C; border-radius:4px; padding:4px 8px; font-size:8px; color:white;">Finalize</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Icon + Label Rail</h3>
+      <p>Compact 52px sidebar, icons with small labels below. Always visible. Minimal footprint, always clear where you are.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Collapsible sidebar -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:0; overflow:hidden; border-radius:8px 8px 0 0;">
+      <div style="display:flex; height:200px; background:#F0F4F8;">
+        <!-- Expanded sidebar -->
+        <div style="width:140px; background:#1B3A5C; display:flex; flex-direction:column; padding:12px 0; border-radius:8px 0 0 0;">
+          <div style="color:white; font-size:10px; font-weight:bold; letter-spacing:1px; padding:0 12px; margin-bottom:14px;">GENWALLDECOR</div>
+          <div style="background:rgba(255,255,255,0.15); margin:0 8px 2px; border-radius:6px; padding:7px 10px; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:13px;">🖼️</span>
+            <span style="font-size:10px; color:white; font-weight:600;">Wall View</span>
+          </div>
+          <div style="margin:0 8px 2px; border-radius:6px; padding:7px 10px; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:13px;">🕐</span>
+            <span style="font-size:10px; color:rgba(255,255,255,0.65);">History</span>
+          </div>
+          <div style="margin:0 8px; border-radius:6px; padding:7px 10px; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:13px;">✨</span>
+            <span style="font-size:10px; color:rgba(255,255,255,0.65);">New Wall</span>
+          </div>
+          <div style="flex:1;"></div>
+          <div style="padding:0 12px; display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <div style="width:22px; height:22px; border-radius:50%; background:#2E6DA4; display:flex; align-items:center; justify-content:center; font-size:9px; color:white;">A</div>
+            <span style="font-size:9px; color:rgba(255,255,255,0.65);">Abhi</span>
+          </div>
+        </div>
+        <!-- Main content -->
+        <div style="flex:1; padding:14px;">
+          <div style="font-size:13px; font-weight:bold; color:#111827; margin-bottom:4px;">Your Wall — Minimalist</div>
+          <div style="background:#C8DFEE; border-radius:6px; height:100px; display:flex; align-items:center; justify-content:center;">
+            <span style="font-size:10px; color:#1B3A5C; opacity:0.6;">[ Wall Render ]</span>
+          </div>
+          <div style="display:flex; gap:6px; margin-top:8px;">
+            <div style="background:white; border:1px solid #D8E4ED; border-radius:4px; padding:4px 8px; font-size:8px; color:#1B3A5C;">Regenerate</div>
+            <div style="background:#1B3A5C; border-radius:4px; padding:4px 8px; font-size:8px; color:white;">Finalize</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Expanded Sidebar</h3>
+      <p>140px sidebar with icon + full label always visible. More spacious, makes nav items immediately readable. Takes more horizontal space.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Top nav retained, left icons added -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:0; overflow:hidden; border-radius:8px 8px 0 0;">
+      <div style="display:flex; flex-direction:column; height:200px; background:#F0F4F8;">
+        <!-- Top nav retained -->
+        <div style="background:#1B3A5C; display:flex; justify-content:space-between; align-items:center; padding:8px 14px;">
+          <span style="color:white; font-size:10px; font-weight:bold; letter-spacing:1px;">GENWALLDECOR</span>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <div style="background:rgba(255,255,255,0.15); border-radius:20px; padding:3px 10px; display:flex; gap:8px;">
+              <span style="font-size:9px; color:white; font-weight:600;">🖼️ Wall</span>
+              <span style="font-size:9px; color:rgba(255,255,255,0.6);">🕐 History</span>
+              <span style="font-size:9px; color:rgba(255,255,255,0.6);">✨ New</span>
+            </div>
+            <div style="width:22px; height:22px; border-radius:50%; background:#2E6DA4; display:flex; align-items:center; justify-content:center; font-size:9px; color:white;">A</div>
+          </div>
+        </div>
+        <!-- Content full width -->
+        <div style="flex:1; padding:14px;">
+          <div style="font-size:13px; font-weight:bold; color:#111827; margin-bottom:4px;">Your Wall — Minimalist</div>
+          <div style="background:#C8DFEE; border-radius:6px; height:90px; display:flex; align-items:center; justify-content:center;">
+            <span style="font-size:10px; color:#1B3A5C; opacity:0.6;">[ Wall Render — full width ]</span>
+          </div>
+          <div style="display:flex; gap:6px; margin-top:8px;">
+            <div style="background:white; border:1px solid #D8E4ED; border-radius:4px; padding:4px 8px; font-size:8px; color:#1B3A5C;">Regenerate</div>
+            <div style="background:#1B3A5C; border-radius:4px; padding:4px 8px; font-size:8px; color:white;">Finalize</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Top Nav (Logged-In Style)</h3>
+      <p>Keep the top nav but with a pill-style logged-in tab switcher. Full-width content area — better for the wall render which needs space.</p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GenWallDecor — Landing v7</title>
+<style>body{margin:0;background:#E8EFF5;padding:32px 16px;}</style>
+</head>
+<body>
+
+<div style="max-width:900px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;">
+<div style="border-radius:12px;overflow:hidden;box-shadow:0 12px 60px rgba(0,0,0,0.22);">
+
+  <div style="position:relative;">
+
+    <!-- ══ HERO — bright room photo ══ -->
+    <div style="position:relative;height:500px;overflow:hidden;">
+
+      <img
+        src="https://images.unsplash.com/photo-1764010533326-c6916f3d6252?w=1600&q=90&auto=format&fit=crop"
+        alt="Modern living room with framed wall art"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 5%;"
+      />
+
+      <!-- Very subtle vignette -->
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 120% 100% at 50% 0%,transparent 40%,rgba(15,35,60,0.18) 100%);"></div>
+
+      <!-- Bottom fade -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to bottom,transparent,rgba(27,58,92,0.85));"></div>
+
+      <!-- NAV -->
+      <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:18px 44px;">
+        <span style="color:#1B3A5C;font-weight:700;font-size:12px;letter-spacing:3px;">GENWALLDECOR</span>
+        <div style="display:flex;gap:24px;align-items:center;">
+          <span style="color:#374151;font-size:12px;font-weight:500;">History</span>
+          <div style="border:1.5px solid rgba(27,58,92,0.5);color:#1B3A5C;padding:5px 18px;border-radius:20px;font-size:11px;font-weight:600;">Sign In</div>
+        </div>
+      </div>
+
+      <!-- ── Room widget — bottom right, floating ── -->
+      <div style="position:absolute;bottom:20px;right:28px;z-index:10;pointer-events:none;">
+
+        <!-- Hand-drawn arrow — transparent PNG, left of room image, flipped to point up-left -->
+        <img src="Assets/hand_drawn_arrow.png" alt=""
+          style="
+            position:absolute;
+            bottom:135px;
+            right:5px;
+            width:90px;
+            height:auto;
+            transform: rotate(-45deg);
+            opacity: 0.85;
+            pointer-events:none;
+          "
+        />
+
+        <!-- Grainy halo: canvas drawn with JS noise, sits behind the image -->
+        <canvas id="grainHalo" width="300" height="300"
+          style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;"></canvas>
+
+        <!-- Floating image — no box, edges fade via mask -->
+        <img src="Assets/room_3D_illustration.png" alt="3D isometric room"
+          style="
+            display:block;
+            width:150px;
+            height:150px;
+            object-fit:contain;
+            position:relative;
+            -webkit-mask-image: radial-gradient(ellipse 78% 78% at center, black 28%, transparent 68%);
+            mask-image: radial-gradient(ellipse 78% 78% at center, black 28%, transparent 68%);
+            filter: drop-shadow(0 6px 18px rgba(15,35,60,0.20));
+          "
+        />
+      </div>
+
+      <script>
+        (function() {
+          const c = document.getElementById('grainHalo');
+          const ctx = c.getContext('2d');
+          const w = c.width, h = c.height;
+          const cx = w / 2, cy = h / 2, r = w / 2;
+          const img = ctx.createImageData(w, h);
+          const data = img.data;
+          for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+              const dx = x - cx, dy = y - cy;
+              const dist = Math.sqrt(dx*dx + dy*dy) / r;
+              if (dist >= 1) continue;
+              // Radial falloff: strong at center, zero at edge
+              const falloff = Math.pow(1 - dist, 1.6);
+              // Sparse random grain — only ~30% of pixels fire
+              const grain = Math.random() < 0.30 ? Math.random() : 0;
+              const alpha = falloff * grain * 220; // max alpha ~220/255
+              const i = (y * w + x) * 4;
+              data[i]   = 255; // R
+              data[i+1] = 255; // G
+              data[i+2] = 255; // B
+              data[i+3] = alpha;
+            }
+          }
+          ctx.putImageData(img, 0, 0);
+        })();
+      </script>
+
+      <!-- Hero title — bottom left, frosted glass card -->
+      <div style="position:absolute;bottom:80px;left:44px;z-index:10;">
+        <div style="background:rgba(255,255,255,0.38);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.50);border-radius:14px;padding:22px 26px;max-width:360px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <div style="font-size:42px;font-weight:900;color:#1B3A5C;line-height:1.05;letter-spacing:-1.5px;">
+            Design Your<br><span style="color:#2E6DA4;">Perfect Wall</span>
+          </div>
+          <div style="color:#374151;font-size:12px;margin-top:10px;line-height:1.65;">
+            AI-powered wall decor that matches your style.
+          </div>
+          <div style="margin-top:18px;">
+            <div style="display:inline-block;background:#1B3A5C;color:white;padding:11px 26px;border-radius:8px;font-size:13px;font-weight:700;box-shadow:0 4px 16px rgba(27,58,92,0.30);">Start Creating</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /hero -->
+
+    <!-- TRANSITION -->
+    <div style="background:linear-gradient(180deg,#1B3A5C 0%,#2E6DA4 30%,#C8DFEE 65%,#F0F4F8 100%);padding:48px 44px 52px;">
+
+      <div style="font-size:10px;color:rgba(255,255,255,0.65);letter-spacing:2.5px;font-weight:600;margin-bottom:8px;">HOW IT WORKS</div>
+      <div style="font-size:22px;font-weight:700;color:white;margin-bottom:32px;">Three steps to your perfect wall</div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+        <div style="background:rgba(255,255,255,0.93);border-radius:14px;padding:22px;box-shadow:0 8px 32px rgba(0,0,0,0.10);">
+          <div style="width:38px;height:38px;background:#EBF2F8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;">🎨</div>
+          <div style="font-size:10px;color:#2E6DA4;font-weight:700;letter-spacing:1px;margin-bottom:5px;">STEP 1</div>
+          <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:6px;">Choose Your Style</div>
+          <div style="font-size:11px;color:#6B7280;line-height:1.5;">Pick from 20 curated decor styles that match your taste.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.93);border-radius:14px;padding:22px;box-shadow:0 8px 32px rgba(0,0,0,0.10);">
+          <div style="width:38px;height:38px;background:#EBF2F8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;">✏️</div>
+          <div style="font-size:10px;color:#2E6DA4;font-weight:700;letter-spacing:1px;margin-bottom:5px;">STEP 2</div>
+          <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:6px;">Review AI Descriptions</div>
+          <div style="font-size:11px;color:#6B7280;line-height:1.5;">AI creates tailored art descriptions for your wall.</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.93);border-radius:14px;padding:22px;box-shadow:0 8px 32px rgba(0,0,0,0.10);">
+          <div style="width:38px;height:38px;background:#EBF2F8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;">🖼️</div>
+          <div style="font-size:10px;color:#2E6DA4;font-weight:700;letter-spacing:1px;margin-bottom:5px;">STEP 3</div>
+          <div style="font-size:14px;font-weight:700;color:#111827;margin-bottom:6px;">See Your Wall</div>
+          <div style="font-size:11px;color:#6B7280;line-height:1.5;">Get a full wall visualization you can refine and finalize.</div>
+        </div>
+      </div>
+
+      <div style="background:white;border-radius:14px;padding:22px 28px;margin-top:18px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,0.06);border:1px solid #D8E4ED;">
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:3px;">Ready to transform your space?</div>
+          <div style="font-size:12px;color:#6B7280;">It only takes a few minutes to create something beautiful.</div>
+        </div>
+        <div style="background:#1B3A5C;color:white;padding:11px 22px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap;">Get Started →</div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,79 @@
+- generic [active] [ref=e1]:
+  - heading "GenWallDecor — System Architecture" [level=1] [ref=e2]
+  - document [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e12]: 🗄️ Persistence
+        - generic [ref=e17]: 🤖 AI Services
+        - generic [ref=e22]: ⚙️ Express Backend (Cloud Run)
+      - generic [ref=e40]:
+        - generic [ref=e44]: structured output
+        - generic [ref=e48]: image prompt
+        - generic [ref=e52]: image prompt
+        - generic [ref=e56]: trace
+        - generic [ref=e60]: trace
+        - generic [ref=e64]: query
+        - generic [ref=e68]: base64 PNG → Buffer
+        - generic [ref=e72]: generation record
+        - generic [ref=e76]: read
+        - generic [ref=e80]: signed URL
+        - generic [ref=e84]: dailyCount
+        - generic [ref=e89]:
+          - text: Firebase ID token
+          - text: + REST calls
+        - generic [ref=e93]: ID token
+      - generic [ref=e94]:
+        - generic [ref=e100]:
+          - text: Firestore
+          - text: "users/{uid}"
+          - text: "generations/{genId}"
+        - generic [ref=e106]:
+          - text: GCS Bucket
+          - text: walldecorgen-bucket-1
+          - text: Signed URLs (1hr expiry)
+        - generic [ref=e112]:
+          - text: GPT-4o-mini
+          - text: Structured JSON descriptions
+          - text: via Zod schema
+        - generic [ref=e118]:
+          - text: Gemini 2.5 Flash
+          - text: Piece images + wall render
+          - text: (base64 PNG)
+        - generic [ref=e124]:
+          - text: Firebase Auth Middleware
+          - text: Bearer token → UID
+        - generic [ref=e130]:
+          - text: Rate Limit Middleware
+          - text: canGenerate() via Firestore
+        - generic [ref=e135]: POST /api/generate/descriptions
+        - generic [ref=e140]: POST /api/generate/images
+        - generic [ref=e145]: GET /api/history
+        - generic [ref=e150]: GET /api/admin/usage
+        - generic [ref=e156]:
+          - text: POST /api/generate/pieces
+          - text: POST /api/generate/wall-render
+        - generic [ref=e157]:
+          - generic [ref=e163]: 🖥️ Browser (Vercel)
+          - generic [ref=e164]:
+            - generic [ref=e169]: Landing Page
+            - generic [ref=e175]:
+              - text: Create Wizard
+              - text: Steps 1–4
+              - text: Style → Room → Details → Generate
+            - generic [ref=e181]:
+              - text: Generate Page
+              - text: Review & edit descriptions
+            - generic [ref=e187]:
+              - text: Wall Result Page
+              - text: Piece gallery + shopping links
+            - generic [ref=e193]:
+              - text: History Page
+              - text: Last 3 generations
+        - generic [ref=e199]:
+          - text: 📊 Langfuse
+          - text: LLM observability
+          - text: Admin cost dashboard
+        - generic [ref=e205]:
+          - text: 🔑 Firebase Auth
+          - text: Google sign-in
+          - text: ID token issuance

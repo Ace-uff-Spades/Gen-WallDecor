@@ -1,0 +1,40 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - img "Modern living room with framed wall art" [ref=e6]
+    - generic [ref=e9]:
+      - generic [ref=e10]: GENWALLDECOR
+      - generic [ref=e11]:
+        - generic [ref=e12]: History
+        - generic [ref=e13]: Sign In
+    - generic:
+      - img "3D isometric room"
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - text: Design Your
+        - text: Perfect Wall
+      - generic [ref=e17]: AI-powered wall decor that matches your style.
+      - generic [ref=e19]: Start Creating
+  - generic [ref=e20]:
+    - generic [ref=e21]: HOW IT WORKS
+    - generic [ref=e22]: Three steps to your perfect wall
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - generic [ref=e25]: 🎨
+        - generic [ref=e26]: STEP 1
+        - generic [ref=e27]: Choose Your Style
+        - generic [ref=e28]: Pick from 20 curated decor styles that match your taste.
+      - generic [ref=e29]:
+        - generic [ref=e30]: ✏️
+        - generic [ref=e31]: STEP 2
+        - generic [ref=e32]: Review AI Descriptions
+        - generic [ref=e33]: AI creates tailored art descriptions for your wall.
+      - generic [ref=e34]:
+        - generic [ref=e35]: 🖼️
+        - generic [ref=e36]: STEP 3
+        - generic [ref=e37]: See Your Wall
+        - generic [ref=e38]: Get a full wall visualization you can refine and finalize.
+    - generic [ref=e39]:
+      - generic [ref=e40]:
+        - generic [ref=e41]: Ready to transform your space?
+        - generic [ref=e42]: It only takes a few minutes to create something beautiful.
+      - generic [ref=e43]: Get Started →

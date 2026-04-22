@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GenWallDecor — Architecture</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 32px;
+      background: #F8F7F4;
+      font-family: 'DM Sans', sans-serif;
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0C0C0C;
+      margin-bottom: 24px;
+    }
+    .mermaid {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+  </style>
+</head>
+<body>
+  <h1>GenWallDecor — System Architecture</h1>
+  <div class="mermaid">
+graph TD
+    subgraph Browser["🖥️  Browser (Vercel)"]
+        Landing["Landing Page"]
+        Wizard["Create Wizard\nSteps 1–4\nStyle → Room → Details → Generate"]
+        GenPage["Generate Page\nReview & edit descriptions"]
+        WallPage["Wall Result Page\nPiece gallery + shopping links"]
+        History["History Page\nLast 3 generations"]
+    end
+
+    subgraph Backend["⚙️  Express Backend (Cloud Run)"]
+        AuthMW["Firebase Auth Middleware\nBearer token → UID"]
+        RateMW["Rate Limit Middleware\ncanGenerate() via Firestore"]
+        DescRoute["POST /api/generate/descriptions"]
+        ImgRoute["POST /api/generate/images"]
+        HistRoute["GET /api/history"]
+        AdminRoute["GET /api/admin/usage"]
+        RegenRoute["POST /api/generate/pieces\nPOST /api/generate/wall-render"]
+    end
+
+    subgraph AI["🤖  AI Services"]
+        GPT["GPT-4o-mini\nStructured JSON descriptions\nvia Zod schema"]
+        Gemini["Gemini 2.5 Flash\nPiece images + wall render\n(base64 PNG)"]
+    end
+
+    subgraph Persistence["🗄️  Persistence"]
+        Firestore["Firestore\nusers/{uid}\ngenerations/{genId}"]
+        GCS["GCS Bucket\nwalldecorgen-bucket-1\nSigned URLs (1hr expiry)"]
+    end
+
+    Langfuse["📊  Langfuse\nLLM observability\nAdmin cost dashboard"]
+    FirebaseAuth["🔑  Firebase Auth\nGoogle sign-in\nID token issuance"]
+
+    Browser -->|"Firebase ID token\n+ REST calls"| AuthMW
+    FirebaseAuth -->|"ID token"| Browser
+    AuthMW --> RateMW
+    RateMW --> DescRoute
+    RateMW --> ImgRoute
+    RateMW --> HistRoute
+    RateMW --> RegenRoute
+    AuthMW --> AdminRoute
+
+    DescRoute -->|"structured output"| GPT
+    ImgRoute -->|"image prompt"| Gemini
+    RegenRoute -->|"image prompt"| Gemini
+
+    GPT -->|"trace"| Langfuse
+    Gemini -->|"trace"| Langfuse
+    AdminRoute -->|"query"| Langfuse
+
+    Gemini -->|"base64 PNG → Buffer"| GCS
+    ImgRoute -->|"generation record"| Firestore
+    HistRoute -->|"read"| Firestore
+    HistRoute -->|"signed URL"| GCS
+    RateMW -->|"dailyCount"| Firestore
+
+    style Browser fill:#EEF2FF,stroke:#6366F1,color:#1e1b4b
+    style Backend fill:#FFF7ED,stroke:#E55722,color:#431407
+    style AI fill:#F0FDF4,stroke:#16A34A,color:#14532d
+    style Persistence fill:#F0F9FF,stroke:#0284C7,color:#0c4a6e
+  </div>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#E55722', primaryTextColor: '#0C0C0C', primaryBorderColor: '#C44A1A', lineColor: '#9B958D', secondaryColor: '#F5F2EE', tertiaryColor: '#FAFAF9' } });</script>
+</body>
+</html>

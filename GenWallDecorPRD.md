@@ -79,6 +79,14 @@ const firebaseConfig = {
 - Our GCS bucket doesn't have public access yet, but the firebase admin service account has access: firebase-adminsdk-fbsvc@walldecorgen.iam.gserviceaccount.com
 
 
+## Future Feature List
+
+### Priority 0
+- **Integrate with Facebook Marketplace for second-hand wall decor curation.** Find pieces on FB Marketplace that would complement the wall the user generated. Contact the item owner and curate the discussed items for the user.
+  - *Challenge:* Items may not be an exact fit for the user's designs since these are second-hand pieces — style, size, and condition can vary.
+  - *Challenge:* Integrating with Facebook Marketplace may be tricky — there is no official public API, so this may require scraping, a browser automation approach, or waiting for Meta to open access.
+
+
 
 
 
