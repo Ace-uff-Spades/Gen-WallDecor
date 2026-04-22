@@ -1,33 +1,31 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import Navbar from "@/components/Navbar";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { DM_Sans, DM_Mono } from 'next/font/google';
+import Navbar from '@/components/Navbar';
+import './globals.css';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-dm-sans',
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-dm-mono',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: "GenWallDecor",
-  description: "Generate custom wall decor with AI",
+  title: 'GenWallDecor',
+  description: 'AI-powered wall decor that matches your style',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased pt-16`}
-      >
+    <html lang="en" className={`${dmSans.variable} ${dmMono.variable}`}>
+      <body className="antialiased pt-14">
         <Navbar />
         {children}
       </body>
