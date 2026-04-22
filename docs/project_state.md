@@ -7,9 +7,11 @@
 
 ## Current Focus
 
-**Phase 15: UI Overhaul** — in progress (subagent-driven, 15 tasks)
+**Phase 15: UI Overhaul** ✅ Complete — all 15 tasks done
 Plan: `docs/superpowers/plans/2026-04-21-ui-overhaul.md`
 Spec: `docs/superpowers/specs/2026-04-21-ui-overhaul-design.md`
+
+Admin pages (`/admin/usage`, `/history`, admin charts) intentionally deferred — still use old tokens, styled in a follow-up phase.
 
 ---
 
@@ -21,7 +23,7 @@ Spec: `docs/superpowers/specs/2026-04-21-ui-overhaul-design.md`
 - **Phase 12** ✅ Wireframe Redesign — Cool Slate design system, 7 Figma frames
 - **Phase 13** ✅ Landing Page Visual Refinement (2026-04-09)
 - **Phase 14** ✅ Creation Flow Mockups in Pencil — 6 screens (2026-04-21)
-- **Phase 15** 🔄 UI Overhaul — orange/slate design system, split-screen creation flow, full-bleed wall result (in progress)
+- **Phase 15** ✅ UI Overhaul — orange/slate design system, split-screen creation flow, full-bleed wall result (2026-04-22)
 
 ---
 
@@ -46,14 +48,19 @@ Spec: `docs/superpowers/specs/2026-04-21-ui-overhaul-design.md`
 
 ## Recent Sessions
 
-### 2026-04-22 (Phase 15 — UI Overhaul, in progress)
-Tasks completed so far (subagent-driven):
-- Task 1 ✅ Design system: orange/slate tokens, DM Sans + DM Mono fonts
-- Task 2 ✅ AuthButton: dark navbar styling
-- Task 3 ✅ Navbar: dark slate redesign
-- Task 4 ✅ stylePhotos.ts: 20 Unsplash room photos mapped per style
-- Task 5 ✅ WizardSplitLayout: new split-screen shell component
-- Tasks 6–15: pending (landing page, components, pages, wall result)
+### 2026-04-22 (Phase 15 — UI Overhaul, complete)
+All 15 tasks done:
+- Tasks 1–5 ✅ Design system, AuthButton, Navbar, stylePhotos.ts, WizardSplitLayout
+- Task 6 ✅ Landing page: dark hero, How It Works, dark CTA strip
+- Task 7 ✅ StyleCard: orange selected state with checkmark
+- Task 8 ✅ ColorSchemeSelector + FrameMaterialSelector: pill chips
+- Task 9 ✅ RoomContextForm: pill chips for room type, clean dimension inputs
+- Task 10 ✅ create/page.tsx: WizardSplitLayout wired, WizardLayout.tsx deleted
+- Task 11 ✅ DescriptionCard: accordion with expand/collapse and inline edit
+- Task 12 ✅ generate/page.tsx: split-screen accordion, inline auth/loading
+- Task 13 ✅ PieceGallery: horizontal scroll strip, dark detail panel
+- Task 14 ✅ wall/[id]/page.tsx: full-bleed dark layout, redesigned controls
+- Task 15 ✅ Visual review: no fixes needed, 97 backend tests still passing
 
 ### 2026-04-21
 - Added Steps 5 & 6 to Creation Flow in `landing-design.pen`
