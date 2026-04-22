@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export interface PieceDescription {
   title: string;
@@ -13,109 +13,155 @@ export interface PieceDescription {
 interface DescriptionCardProps {
   piece: PieceDescription;
   index: number;
+  isExpanded: boolean;
+  onExpand: () => void;
   onUpdate: (updated: PieceDescription) => void;
 }
 
-export default function DescriptionCard({ piece, index, onUpdate }: DescriptionCardProps) {
-  const [editing, setEditing] = useState(false);
+export default function DescriptionCard({
+  piece,
+  index,
+  isExpanded,
+  onExpand,
+  onUpdate,
+}: DescriptionCardProps) {
   const [draft, setDraft] = useState(piece);
+
+  // When parent regenerates descriptions, sync the local draft (but not while user is editing)
+  useEffect(() => {
+    if (!isExpanded) {
+      setDraft(piece);
+    }
+  }, [piece]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSave = () => {
     onUpdate(draft);
-    setEditing(false);
+    onExpand(); // toggles off — collapses the card
   };
 
   const handleCancel = () => {
     setDraft(piece);
-    setEditing(false);
+    onExpand(); // toggles off — collapses the card
   };
 
-  if (editing) {
-    return (
-      <div className="rounded-2xl border-2 border-primary/30 bg-white p-6">
-        <div className="space-y-3">
-          <div>
-            <label className="mb-1 block text-xs font-medium text-text-dark">Title</label>
-            <input
-              value={draft.title}
-              onChange={(e) => setDraft({ ...draft, title: e.target.value })}
-              className="w-full rounded-lg border border-secondary px-3 py-2 text-sm text-text-darker focus:border-primary focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-text-dark">Description</label>
-            <textarea
-              value={draft.description}
-              onChange={(e) => setDraft({ ...draft, description: e.target.value })}
-              rows={3}
-              className="w-full rounded-lg border border-secondary px-3 py-2 text-sm text-text-darker focus:border-primary focus:outline-none resize-none"
-            />
-          </div>
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label className="mb-1 block text-xs font-medium text-text-dark">Medium</label>
-              <input
-                value={draft.medium}
-                onChange={(e) => setDraft({ ...draft, medium: e.target.value })}
-                className="w-full rounded-lg border border-secondary px-3 py-2 text-sm text-text-darker focus:border-primary focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-text-dark">Dimensions</label>
-              <input
-                value={draft.dimensions}
-                onChange={(e) => setDraft({ ...draft, dimensions: e.target.value })}
-                className="w-full rounded-lg border border-secondary px-3 py-2 text-sm text-text-darker focus:border-primary focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-text-dark">Placement</label>
-              <input
-                value={draft.placement}
-                onChange={(e) => setDraft({ ...draft, placement: e.target.value })}
-                className="w-full rounded-lg border border-secondary px-3 py-2 text-sm text-text-darker focus:border-primary focus:outline-none"
-              />
-            </div>
-          </div>
-        </div>
-        <div className="mt-4 flex gap-2 justify-end">
-          <button
-            onClick={handleCancel}
-            className="cursor-pointer rounded-lg px-4 py-2 text-sm text-text-dark hover:bg-secondary/50 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            className="cursor-pointer rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity"
-          >
-            Save
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="rounded-2xl border border-secondary/60 bg-white p-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-medium text-primary">Piece {index + 1}</p>
-          <h3 className="mt-1 text-lg font-bold text-text-darker">{piece.title}</h3>
+    <div
+      className={`rounded-xl border bg-white transition-all ${
+        isExpanded ? 'border-primary shadow-sm' : 'border-border'
+      }`}
+    >
+      {/* Header — always visible, click to expand */}
+      <button
+        onClick={onExpand}
+        className="w-full flex items-center justify-between px-5 py-4 text-left cursor-pointer"
+      >
+        <div className="flex-1 min-w-0">
+          <p className="font-mono text-[10px] tracking-widest uppercase text-primary mb-0.5">
+            Piece {index + 1}
+          </p>
+          <p className="text-sm font-semibold text-text truncate">{piece.title}</p>
+          {!isExpanded && (
+            <p className="text-xs text-text-muted mt-0.5 truncate">{piece.description}</p>
+          )}
         </div>
-        <button
-          onClick={() => setEditing(true)}
-          className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-text-dark hover:bg-secondary/50 transition-colors"
+        <svg
+          className={`ml-3 shrink-0 h-4 w-4 text-text-muted transition-transform duration-200 ${
+            isExpanded ? 'rotate-90' : ''
+          }`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
         >
-          Edit
-        </button>
-      </div>
-      <p className="mt-2 text-sm text-text-dark leading-relaxed">{piece.description}</p>
-      <div className="mt-4 flex flex-wrap gap-3 text-xs text-text-dark">
-        <span className="rounded-full bg-secondary/40 px-2.5 py-1">{piece.medium}</span>
-        <span className="rounded-full bg-secondary/40 px-2.5 py-1">{piece.dimensions}</span>
-        <span className="rounded-full bg-secondary/40 px-2.5 py-1">{piece.placement}</span>
-      </div>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      {/* Expanded content */}
+      {isExpanded && (
+        <div className="px-5 pb-5 border-t border-border">
+          <div className="pt-4 space-y-3">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-text-muted">Title</label>
+              <input
+                value={draft.title}
+                onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-text-muted">Description</label>
+              <textarea
+                value={draft.description}
+                onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+                rows={3}
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text focus:border-primary focus:outline-none resize-none"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-text-muted">Medium</label>
+                <input
+                  value={draft.medium}
+                  onChange={(e) => setDraft({ ...draft, medium: e.target.value })}
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-text-muted">Dimensions</label>
+                <input
+                  value={draft.dimensions}
+                  onChange={(e) => setDraft({ ...draft, dimensions: e.target.value })}
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-text-muted">Placement</label>
+                <input
+                  value={draft.placement}
+                  onChange={(e) => setDraft({ ...draft, placement: e.target.value })}
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 flex gap-2 justify-end">
+            <button
+              onClick={handleCancel}
+              className="cursor-pointer rounded-lg px-4 py-1.5 text-sm text-text-muted hover:text-text transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="cursor-pointer rounded-lg bg-primary hover:bg-primary-hover px-4 py-1.5 text-sm font-medium text-white transition-colors"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Metadata chips — only when collapsed */}
+      {!isExpanded && (
+        <div className="flex flex-wrap gap-1.5 px-5 pb-4">
+          {piece.medium && (
+            <span className="rounded-full bg-bg border border-border px-2.5 py-0.5 text-[11px] text-text-muted">
+              {piece.medium}
+            </span>
+          )}
+          {piece.dimensions && (
+            <span className="rounded-full bg-bg border border-border px-2.5 py-0.5 text-[11px] text-text-muted">
+              {piece.dimensions}
+            </span>
+          )}
+          {piece.placement && (
+            <span className="rounded-full bg-bg border border-border px-2.5 py-0.5 text-[11px] text-text-muted">
+              {piece.placement}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
