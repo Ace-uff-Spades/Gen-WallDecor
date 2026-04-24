@@ -1,17 +1,17 @@
 # GenWallDecor — Project State
 
-> Last updated: 2026-04-22
+> Last updated: 2026-04-23
 > Branch: `main` (all work committed on main)
 
 ---
 
 ## Current Focus
 
-**Phase 15: UI Overhaul** ✅ Complete — all 15 tasks done
-Plan: `docs/superpowers/plans/2026-04-21-ui-overhaul.md`
-Spec: `docs/superpowers/specs/2026-04-21-ui-overhaul-design.md`
+**Phase 16: UI Polish** — spec written, implementation plan pending
+Spec: `docs/superpowers/specs/2026-04-23-ui-polish-design.md`
+Three items: landing page rebuild, creation flow polish, Unsplash photo curation
 
-Admin pages (`/admin/usage`, `/history`, admin charts) intentionally deferred — still use old tokens, styled in a follow-up phase.
+Admin pages (`/admin/usage`, `/history`, admin charts) intentionally deferred.
 
 ---
 
@@ -24,6 +24,7 @@ Admin pages (`/admin/usage`, `/history`, admin charts) intentionally deferred �
 - **Phase 13** ✅ Landing Page Visual Refinement (2026-04-09)
 - **Phase 14** ✅ Creation Flow Mockups in Pencil — 6 screens (2026-04-21)
 - **Phase 15** ✅ UI Overhaul — orange/slate design system, split-screen creation flow, full-bleed wall result (2026-04-22)
+- **Phase 16** 🔄 UI Polish — spec approved, plan not yet written (2026-04-23)
 
 ---
 
@@ -48,23 +49,15 @@ Admin pages (`/admin/usage`, `/history`, admin charts) intentionally deferred �
 
 ## Recent Sessions
 
-### 2026-04-22 (Phase 15 — UI Overhaul, complete)
-All 15 tasks done:
-- Tasks 1–5 ✅ Design system, AuthButton, Navbar, stylePhotos.ts, WizardSplitLayout
-- Task 6 ✅ Landing page: dark hero, How It Works, dark CTA strip
-- Task 7 ✅ StyleCard: orange selected state with checkmark
-- Task 8 ✅ ColorSchemeSelector + FrameMaterialSelector: pill chips
-- Task 9 ✅ RoomContextForm: pill chips for room type, clean dimension inputs
-- Task 10 ✅ create/page.tsx: WizardSplitLayout wired, WizardLayout.tsx deleted
-- Task 11 ✅ DescriptionCard: accordion with expand/collapse and inline edit
-- Task 12 ✅ generate/page.tsx: split-screen accordion, inline auth/loading
-- Task 13 ✅ PieceGallery: horizontal scroll strip, dark detail panel
-- Task 14 ✅ wall/[id]/page.tsx: full-bleed dark layout, redesigned controls
-- Task 15 ✅ Visual review: no fixes needed, 97 backend tests still passing
+### 2026-04-23 (Phase 16 — UI Polish, spec approved)
+- Brainstormed 3 open work items → approved single-viewport full-bleed landing (navy, photo C: `photo-1724582586529-62622e50c0b3`)
+- Landing: full rewrite of `page.tsx` — no scroll, hero photo fills viewport, step pills, navy CTA
+- Creation flow: progress bar (full-width 3px top), style tag pill on right panel, typography polish
+- Photos: curation pass for 20 styles in `stylePhotos.ts`
+- Spec: `docs/superpowers/specs/2026-04-23-ui-polish-design.md` ✅
 
-### 2026-04-21
-- Added Steps 5 & 6 to Creation Flow in `landing-design.pen`
-- Brainstormed + specced + planned Phase 15 UI Overhaul
+### 2026-04-22 (Phase 15 — UI Overhaul, complete)
+All 15 tasks done — design system, split-screen wizard, full-bleed wall result, 97 tests passing.
 
 ---
 
@@ -78,6 +71,7 @@ All 15 tasks done:
 
 ## Open Work Items
 
+- [ ] **Phase 16** Write implementation plan + execute (spec at `docs/superpowers/specs/2026-04-23-ui-polish-design.md`)
 - [ ] Merge `feature/retry-auth-ux` → main
 - [ ] Add `ADMIN_UID` + `MONTHLY_BUDGET_USD` + Langfuse keys to Cloud Run env vars
 - [ ] Set OpenAI spend limit + GCP budget alert

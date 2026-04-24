@@ -50,9 +50,9 @@
 
 ## Implementation State
 
-Phases 1–14 complete. Phase 15 UI overhaul in progress. App live on Cloud Run + Vercel. 97 backend tests passing.
+Phases 1–15 complete. Phase 16 UI Polish specced, plan not yet written. App live on Cloud Run + Vercel. 97 backend tests passing.
 Plans: `docs/superpowers/plans/` · Specs: `docs/superpowers/specs/`
-Active plan: `docs/superpowers/plans/2026-04-21-ui-overhaul.md` (15 tasks, 5 done)
+Active spec: `docs/superpowers/specs/2026-04-23-ui-polish-design.md`
 
 ---
 
