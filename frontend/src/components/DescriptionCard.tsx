@@ -18,6 +18,56 @@ interface DescriptionCardProps {
   onUpdate: (updated: PieceDescription) => void;
 }
 
+function EditableField({
+  label,
+  value,
+  onChange,
+  multiline = false,
+  rows = 3,
+}: {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  multiline?: boolean;
+  rows?: number;
+}) {
+  return (
+    <div className="relative group">
+      <label className="mb-1 block text-xs font-medium text-text-muted">{label}</label>
+      <div className="relative">
+        {multiline ? (
+          <textarea
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            rows={rows}
+            className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text focus:border-primary focus:outline-none resize-none"
+          />
+        ) : (
+          <input
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
+          />
+        )}
+        {/* Pencil icon — appears on hover as an edit affordance */}
+        <svg
+          className="absolute right-2.5 top-2.5 h-3.5 w-3.5 text-text-muted opacity-0 group-hover:opacity-60 transition-opacity pointer-events-none"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+          />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 export default function DescriptionCard({
   piece,
   index,
@@ -47,7 +97,9 @@ export default function DescriptionCard({
   return (
     <div
       className={`rounded-xl border bg-white transition-all ${
-        isExpanded ? 'border-primary shadow-sm' : 'border-border'
+        isExpanded
+          ? 'border-primary/60 shadow-sm'
+          : 'border-border opacity-75'
       }`}
     >
       {/* Header — always visible, click to expand */}
@@ -81,48 +133,33 @@ export default function DescriptionCard({
       {isExpanded && (
         <div className="px-5 pb-5 border-t border-border">
           <div className="pt-4 space-y-3">
-            <div>
-              <label className="mb-1 block text-xs font-medium text-text-muted">Title</label>
-              <input
-                value={draft.title}
-                onChange={(e) => setDraft({ ...draft, title: e.target.value })}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-text-muted">Description</label>
-              <textarea
-                value={draft.description}
-                onChange={(e) => setDraft({ ...draft, description: e.target.value })}
-                rows={3}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text focus:border-primary focus:outline-none resize-none"
-              />
-            </div>
+            <EditableField
+              label="Title"
+              value={draft.title}
+              onChange={(val) => setDraft({ ...draft, title: val })}
+            />
+            <EditableField
+              label="Description"
+              value={draft.description}
+              onChange={(val) => setDraft({ ...draft, description: val })}
+              multiline
+            />
             <div className="grid grid-cols-3 gap-3">
-              <div>
-                <label className="mb-1 block text-xs font-medium text-text-muted">Medium</label>
-                <input
-                  value={draft.medium}
-                  onChange={(e) => setDraft({ ...draft, medium: e.target.value })}
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium text-text-muted">Dimensions</label>
-                <input
-                  value={draft.dimensions}
-                  onChange={(e) => setDraft({ ...draft, dimensions: e.target.value })}
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium text-text-muted">Placement</label>
-                <input
-                  value={draft.placement}
-                  onChange={(e) => setDraft({ ...draft, placement: e.target.value })}
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
-                />
-              </div>
+              <EditableField
+                label="Medium"
+                value={draft.medium}
+                onChange={(val) => setDraft({ ...draft, medium: val })}
+              />
+              <EditableField
+                label="Dimensions"
+                value={draft.dimensions}
+                onChange={(val) => setDraft({ ...draft, dimensions: val })}
+              />
+              <EditableField
+                label="Placement"
+                value={draft.placement}
+                onChange={(val) => setDraft({ ...draft, placement: val })}
+              />
             </div>
           </div>
           <div className="mt-4 flex gap-2 justify-end">
