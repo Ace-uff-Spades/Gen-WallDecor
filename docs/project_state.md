@@ -7,9 +7,8 @@
 
 ## Current Focus
 
-**Phase 16: UI Polish** — spec written, implementation plan pending
-Spec: `docs/superpowers/specs/2026-04-23-ui-polish-design.md`
-Three items: landing page rebuild, creation flow polish, Unsplash photo curation
+**Phase 16: UI Polish** — complete ✅
+All 6 tasks shipped: landing page rebuild, WizardSplitLayout polish, DescriptionCard accordion, shadow upgrades, photo curation.
 
 Admin pages (`/admin/usage`, `/history`, admin charts) intentionally deferred.
 
@@ -24,7 +23,7 @@ Admin pages (`/admin/usage`, `/history`, admin charts) intentionally deferred.
 - **Phase 13** ✅ Landing Page Visual Refinement (2026-04-09)
 - **Phase 14** ✅ Creation Flow Mockups in Pencil — 6 screens (2026-04-21)
 - **Phase 15** ✅ UI Overhaul — orange/slate design system, split-screen creation flow, full-bleed wall result (2026-04-22)
-- **Phase 16** 🔄 UI Polish — spec approved, plan not yet written (2026-04-23)
+- **Phase 16** ✅ UI Polish — complete (2026-04-25)
 
 ---
 
@@ -49,6 +48,13 @@ Admin pages (`/admin/usage`, `/history`, admin charts) intentionally deferred.
 
 ## Recent Sessions
 
+### 2026-04-25 (Phase 16 — UI Polish, complete)
+- Landing page: full rewrite — single-viewport navy hero, full-bleed photo, gradient overlay, step pills
+- WizardSplitLayout: 3px top progress bar, optional `styleName?` style tag pill, typography polish
+- DescriptionCard: `border-primary/60` expanded, `opacity-75` collapsed, pencil edit affordance, chip DRY
+- Shadow upgrades: StyleCard `hover:shadow-md`, ColorSchemeSelector chips `shadow-sm`/`hover:shadow-sm`
+- stylePhotos.ts: all 21 IDs replaced — original slugs were invalid CDN URLs (all 404), now verified numeric format
+
 ### 2026-04-23 (Phase 16 — UI Polish, spec approved)
 - Brainstormed 3 open work items → approved single-viewport full-bleed landing (navy, photo C: `photo-1724582586529-62622e50c0b3`)
 - Landing: full rewrite of `page.tsx` — no scroll, hero photo fills viewport, step pills, navy CTA
@@ -71,7 +77,7 @@ All 15 tasks done — design system, split-screen wizard, full-bleed wall result
 
 ## Open Work Items
 
-- [ ] **Phase 16** Write implementation plan + execute (spec at `docs/superpowers/specs/2026-04-23-ui-polish-design.md`)
+- [x] **Phase 16** Complete ✅
 - [ ] Merge `feature/retry-auth-ux` → main
 - [ ] Add `ADMIN_UID` + `MONTHLY_BUDGET_USD` + Langfuse keys to Cloud Run env vars
 - [ ] Set OpenAI spend limit + GCP budget alert
