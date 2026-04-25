@@ -41,8 +41,8 @@ export default function ColorSchemeSelector({ selected, onChange }: ColorSchemeS
             onClick={() => toggle(color)}
             className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
               selected.includes(color)
-                ? 'bg-primary text-white'
-                : 'bg-bg border border-border text-text-muted hover:border-text-muted hover:text-text'
+                ? 'bg-primary text-white shadow-sm'
+                : 'bg-bg border border-border text-text-muted hover:border-text-muted hover:text-text hover:shadow-sm'
             }`}
           >
             {color}

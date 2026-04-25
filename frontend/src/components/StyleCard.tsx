@@ -13,7 +13,7 @@ export default function StyleCard({ style, selected, onSelect }: StyleCardProps)
       className={`relative w-full text-left rounded-xl border p-4 transition-all cursor-pointer ${
         selected
           ? 'border-primary bg-orange-50'
-          : 'border-border bg-white hover:border-text-muted hover:shadow-sm'
+          : 'border-border bg-white hover:border-text-muted hover:shadow-md'
       }`}
     >
       {selected && (
