@@ -73,6 +73,7 @@ export default function CreatePage() {
       title={STEP_TITLES[state.step - 1]}
       subtitle={STEP_SUBTITLES[state.step - 1]}
       photoUrl={photoUrl}
+      styleName={state.style}
       onNext={handleNext}
       onBack={state.step > 1 ? prevStep : undefined}
       nextDisabled={isNextDisabled()}
