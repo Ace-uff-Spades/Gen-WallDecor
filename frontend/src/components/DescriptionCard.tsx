@@ -82,7 +82,7 @@ export default function DescriptionCard({
     if (!isExpanded) {
       setDraft(piece);
     }
-  }, [piece]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [piece, isExpanded]);
 
   const handleSave = () => {
     onUpdate(draft);
@@ -182,21 +182,13 @@ export default function DescriptionCard({
       {/* Metadata chips — only when collapsed */}
       {!isExpanded && (
         <div className="flex flex-wrap gap-1.5 px-5 pb-4">
-          {piece.medium && (
-            <span className="rounded-full bg-bg border border-border px-2.5 py-0.5 text-[11px] text-text-muted">
-              {piece.medium}
-            </span>
-          )}
-          {piece.dimensions && (
-            <span className="rounded-full bg-bg border border-border px-2.5 py-0.5 text-[11px] text-text-muted">
-              {piece.dimensions}
-            </span>
-          )}
-          {piece.placement && (
-            <span className="rounded-full bg-bg border border-border px-2.5 py-0.5 text-[11px] text-text-muted">
-              {piece.placement}
-            </span>
-          )}
+          {(['medium', 'dimensions', 'placement'] as const)
+            .filter((key) => piece[key])
+            .map((key) => (
+              <span key={key} className="rounded-full bg-bg border border-border px-2.5 py-0.5 text-[11px] text-text-muted">
+                {piece[key]}
+              </span>
+            ))}
         </div>
       )}
     </div>
