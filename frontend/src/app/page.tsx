@@ -1,105 +1,80 @@
 import Link from 'next/link';
 
-const HERO_PHOTO = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1800&q=85';
+const HERO_PHOTO =
+  'https://images.unsplash.com/photo-1724582586529-62622e50c0b3?auto=format&fit=crop&w=1800&q=85';
 
-const steps = [
-  {
-    number: 1,
-    title: 'Choose Your Style',
-    description: 'Pick from 20 curated decor styles that match your taste and space.',
-  },
-  {
-    number: 2,
-    title: 'Review AI Descriptions',
-    description: 'AI creates detailed art piece descriptions tailored to your chosen style.',
-  },
-  {
-    number: 3,
-    title: 'See Your Wall',
-    description: 'Get a full wall visualization with AI-generated artwork ready to order.',
-  },
+const STEP_PILLS = [
+  { number: '01', label: 'Style' },
+  { number: '02', label: 'Describe' },
+  { number: '03', label: 'Your Wall' },
 ];
 
 export default function Home() {
   return (
-    <main>
-      {/* Hero — full viewport height */}
-      <section
-        className="relative flex items-center justify-center"
+    <main
+      className="relative overflow-hidden"
+      style={{ height: 'calc(100vh - 3.5rem)' }}
+    >
+      {/* Full-bleed hero photo */}
+      <img
+        src={HERO_PHOTO}
+        alt="Room inspiration"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+
+      {/* Gradient overlay */}
+      <div
+        className="absolute inset-0"
         style={{
-          minHeight: 'calc(100vh - 3.5rem)',
-          backgroundImage: `url(${HERO_PHOTO})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          background:
+            'linear-gradient(to bottom, rgba(8,18,32,0.30) 0%, rgba(8,18,32,0.20) 30%, rgba(8,18,32,0.45) 70%, rgba(8,18,32,0.75) 100%)',
         }}
-      >
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="relative z-10 w-full max-w-xl mx-auto px-6 text-center">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl px-10 py-12 border border-white/20">
-            <p className="font-mono text-[11px] tracking-widest uppercase text-white/60 mb-5">
-              GenWallDecor
-            </p>
-            <h1 className="text-5xl md:text-6xl font-bold text-white leading-[1.1] mb-5">
-              Design Your<br />Perfect Wall
-            </h1>
-            <p className="text-base text-white/75 mb-8 leading-relaxed">
-              AI-powered wall decor that matches your style.
-            </p>
-            <Link
-              href="/create"
-              className="inline-block rounded-xl bg-primary hover:bg-primary-hover px-8 py-3.5 text-sm font-semibold text-white transition-colors"
-            >
-              Start Creating
-            </Link>
-          </div>
-        </div>
-      </section>
+      />
 
-      {/* How It Works */}
-      <section className="bg-white py-24 px-6">
-        <div className="max-w-5xl mx-auto text-center">
-          <p className="font-mono text-[11px] tracking-widest uppercase text-text-muted mb-3">
-            How It Works
+      {/* Content overlay */}
+      <div className="relative z-10 h-full flex flex-col justify-between px-16 py-12">
+        {/* Top: eyebrow + headline + subtitle + CTA */}
+        <div className="max-w-lg mt-8">
+          <p className="font-mono text-[10px] tracking-widest uppercase text-white/50 mb-5">
+            AI Wall Decor
           </p>
-          <h2 className="text-3xl font-bold text-text mb-14">
-            Three steps to your perfect wall
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {steps.map((step) => (
-              <div
-                key={step.number}
-                className="rounded-2xl bg-bg p-8 text-left shadow-sm"
-              >
-                <p className="font-mono text-[11px] tracking-widest uppercase text-primary mb-3">
-                  Step {step.number}
-                </p>
-                <h3 className="text-base font-semibold text-text mb-2">{step.title}</h3>
-                <p className="text-sm text-text-muted leading-relaxed">{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Bottom CTA strip */}
-      <section className="bg-dark py-16 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <h2 className="text-2xl font-bold text-text-light mb-1">
-              Ready to transform your space?
-            </h2>
-            <p className="text-sm text-text-light/50">
-              It only takes a few minutes to create something beautiful.
-            </p>
-          </div>
+          <h1 className="text-[52px] font-bold tracking-tight text-white leading-[1.1] mb-4">
+            Design Your
+            <br />
+            <span style={{ color: '#7BB8E0' }}>Perfect Wall</span>
+          </h1>
+          <p className="text-[15px] text-white/60 mb-8 max-w-[380px] leading-relaxed">
+            AI-powered wall decor that matches your style.
+          </p>
           <Link
             href="/create"
-            className="shrink-0 rounded-xl bg-primary hover:bg-primary-hover px-8 py-3.5 text-sm font-semibold text-white transition-colors"
+            className="inline-block rounded-full px-7 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
+            style={{
+              backgroundColor: '#1B3A5C',
+              boxShadow: '0 4px 16px rgba(27,58,92,0.45)',
+            }}
           >
-            Get Started →
+            Start Creating →
           </Link>
         </div>
-      </section>
+
+        {/* Bottom: step pills */}
+        <div className="flex items-center gap-4">
+          {STEP_PILLS.map((pill) => (
+            <div
+              key={pill.number}
+              className="flex items-center gap-2.5 rounded-full px-4 py-2"
+              style={{
+                background: 'rgba(255,255,255,0.10)',
+                border: '1px solid rgba(255,255,255,0.18)',
+              }}
+            >
+              <span className="font-mono text-xs text-white/50">{pill.number}</span>
+              <span className="text-sm font-semibold text-white">{pill.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </main>
   );
 }
