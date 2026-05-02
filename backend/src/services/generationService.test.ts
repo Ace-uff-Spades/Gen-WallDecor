@@ -146,7 +146,7 @@ describe('GenerationService', () => {
 
     expect(mockSet).toHaveBeenCalledWith(
       expect.objectContaining({
-        pieceVersions: [['generations/gen123/piece-0-v0.png']],
+        pieceVersions: { '0': ['generations/gen123/piece-0-v0.png'] },
         wallRenderVersions: ['generations/gen123/wall-render-v0.png'],
         finalizedAt: null,
         pieceRegenerationCount: 0,
@@ -169,10 +169,10 @@ describe('GenerationService', () => {
         { title: 'Art 1', description: 'Original', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
         { title: 'Art 2', description: 'Original 2', medium: 'Print', dimensions: '12x16', placement: 'Left' },
       ],
-      pieceVersions: [
-        ['generations/gen1/piece-0-v0.png'],
-        ['generations/gen1/piece-1-v0.png'],
-      ],
+      pieceVersions: {
+        '0': ['generations/gen1/piece-0-v0.png'],
+        '1': ['generations/gen1/piece-1-v0.png'],
+      },
       wallRenderVersions: ['generations/gen1/wall-render-v0.png'],
       finalizedAt: null,
       pieceRegenerationCount: 0,
@@ -211,10 +211,10 @@ describe('GenerationService', () => {
       );
       expect(mockSet).toHaveBeenCalledWith(
         expect.objectContaining({
-          pieceVersions: [
-            ['generations/gen1/piece-0-v0.png', 'generations/gen1/piece-0-v1.png'],
-            ['generations/gen1/piece-1-v0.png'],
-          ],
+          pieceVersions: {
+            '0': ['generations/gen1/piece-0-v0.png', 'generations/gen1/piece-0-v1.png'],
+            '1': ['generations/gen1/piece-1-v0.png'],
+          },
           pieceRegenerationCount: 1,
         }),
         { merge: true }
@@ -275,7 +275,7 @@ describe('GenerationService', () => {
       descriptions: [
         { title: 'Art 1', description: 'Desc 1', medium: 'Canvas', dimensions: '24x36', placement: 'Center' },
       ],
-      pieceVersions: [['generations/gen1/piece-0-v0.png', 'generations/gen1/piece-0-v1.png']],
+      pieceVersions: { '0': ['generations/gen1/piece-0-v0.png', 'generations/gen1/piece-0-v1.png'] },
       wallRenderVersions: ['generations/gen1/wall-render-v0.png'],
       finalizedAt: null,
       pieceRegenerationCount: 1,
@@ -390,13 +390,13 @@ describe('GenerationService', () => {
       data: () => ({
         userId: 'user123',
         finalizedAt: '2026-01-01T00:00:00.000Z',
-        pieceVersions: [['generations/' + id + '/piece-0-v0.png']],
+        pieceVersions: { '0': ['generations/' + id + '/piece-0-v0.png'] },
         wallRenderVersions: ['generations/' + id + '/wall-render-v0.png'],
       }),
     });
     const draftGen = {
       id: 'draft1',
-      data: () => ({ userId: 'user123', finalizedAt: null, pieceVersions: [], wallRenderVersions: [] }),
+      data: () => ({ userId: 'user123', finalizedAt: null, pieceVersions: {}, wallRenderVersions: [] }),
     };
 
     const mockDelete = jest.fn().mockResolvedValue(undefined);

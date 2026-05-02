@@ -4,6 +4,16 @@ import { ImageService, GeneratedImage } from './imageService';
 import { StorageService } from './storageService';
 import { PieceDescription, UserPreferences, GenerationDocument } from '../types';
 
+function toFirestoreVersions(arr: string[][]): Record<string, string[]> {
+  return Object.fromEntries(arr.map((v, i) => [String(i), v]));
+}
+
+function fromFirestoreVersions(map: Record<string, string[]>): string[][] {
+  return Object.keys(map)
+    .sort((a, b) => Number(a) - Number(b))
+    .map(k => map[k]);
+}
+
 export interface GenerationResult {
   generationId: string;
   pieceUrls: string[];
@@ -52,7 +62,7 @@ export class GenerationService {
       style: preferences.style,
       preferences,
       descriptions,
-      pieceVersions: [] as string[][],
+      pieceVersions: {} as Record<string, string[]>,
       wallRenderVersions: [] as string[],
       finalizedAt: null,
       pieceRegenerationCount: 0,
@@ -82,7 +92,7 @@ export class GenerationService {
     // Update Firestore with versioned storage refs
     await db.collection('generations').doc(genId).set(
       {
-        pieceVersions: pieceRefs.map(ref => [ref]),
+        pieceVersions: toFirestoreVersions(pieceRefs.map(ref => [ref])),
         wallRenderVersions: [wallPath],
         finalizedAt: null,
         pieceRegenerationCount: 0,
@@ -111,30 +121,32 @@ export class GenerationService {
       throw new Error('Piece regeneration limit reached');
     }
 
-    const updatedPieceVersions = data.pieceVersions.map(v => [...v]);
+    const updatedVersionsMap: Record<string, string[]> = Object.fromEntries(
+      Object.entries(data.pieceVersions).map(([k, v]) => [k, [...v]])
+    );
     const updatedDescriptions = [...data.descriptions];
 
     for (const { pieceIndex, description } of pieces) {
       const pieceDesc: PieceDescription = { ...data.descriptions[pieceIndex], description };
       const image = await this.imageService.generatePieceImage(pieceDesc, data.style, userId);
 
-      const versionNum = updatedPieceVersions[pieceIndex].length;
+      const versionNum = updatedVersionsMap[String(pieceIndex)].length;
       const path = `generations/${generationId}/piece-${pieceIndex}-v${versionNum}.png`;
       const buffer = Buffer.from(image.data, 'base64');
       await this.storageService.uploadBuffer(buffer, path, image.mimeType);
 
-      updatedPieceVersions[pieceIndex].push(path);
+      updatedVersionsMap[String(pieceIndex)].push(path);
       updatedDescriptions[pieceIndex] = { ...data.descriptions[pieceIndex], description };
     }
 
     const newCount = data.pieceRegenerationCount + pieces.length;
 
     await db.collection('generations').doc(generationId).set(
-      { pieceVersions: updatedPieceVersions, descriptions: updatedDescriptions, pieceRegenerationCount: newCount },
+      { pieceVersions: updatedVersionsMap, descriptions: updatedDescriptions, pieceRegenerationCount: newCount },
       { merge: true },
     );
 
-    return { pieceVersions: updatedPieceVersions, pieceRegenerationCount: newCount };
+    return { pieceVersions: fromFirestoreVersions(updatedVersionsMap), pieceRegenerationCount: newCount };
   }
 
   async regenerateWallRender(
@@ -149,7 +161,7 @@ export class GenerationService {
 
     if (data.userId !== userId) throw new Error('Unauthorized');
 
-    const allRefs = data.pieceVersions.flat();
+    const allRefs = Object.values(data.pieceVersions).flat();
     for (const ref of pieceImageRefs) {
       if (!allRefs.includes(ref)) throw new Error('Invalid piece image ref');
     }
@@ -218,7 +230,7 @@ export class GenerationService {
     for (const gen of toDelete) {
       const data = gen as any;
       if (data.pieceVersions) {
-        for (const versions of data.pieceVersions as string[][]) {
+        for (const versions of Object.values(data.pieceVersions as Record<string, string[]>)) {
           for (const ref of versions) {
             await this.storageService.deleteFile(ref);
           }

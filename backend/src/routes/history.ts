@@ -40,8 +40,8 @@ historyRouter.get('/:id/pieces/:pieceIndex/download-url', async (req: Request<{ 
       return;
     }
     const pieceIndex = parseInt(req.params.pieceIndex, 10);
-    const pieceVersions = (generation as any).pieceVersions as string[][] | undefined;
-    const versions = pieceVersions?.[pieceIndex];
+    const pieceVersions = (generation as any).pieceVersions as Record<string, string[]> | undefined;
+    const versions = pieceVersions?.[String(pieceIndex)];
     const imageRef = versions ? versions[versions.length - 1] : undefined;
     if (!imageRef) {
       res.status(404).json({ error: 'Piece not found' });
@@ -68,7 +68,10 @@ historyRouter.get('/:id', async (req: Request<{ id: string }>, res: Response) =>
     }
     const data = generation as any;
     const currentPieceRefs: string[] = data.pieceVersions
-      ? (data.pieceVersions as string[][]).map(versions => versions[versions.length - 1])
+      ? Object.keys(data.pieceVersions as Record<string, string[]>)
+          .sort((a, b) => Number(a) - Number(b))
+          .map(k => (data.pieceVersions as Record<string, string[]>)[k])
+          .map(versions => versions[versions.length - 1])
       : [];
     const pieceUrls = await Promise.all(currentPieceRefs.map(ref => storageService.getSignedUrl(ref)));
     const wallRenderUrl = data.wallRenderVersions?.length

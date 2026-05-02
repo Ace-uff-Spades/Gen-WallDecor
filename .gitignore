@@ -37,6 +37,9 @@ yarn-error.log*
 # tooling artifacts — not project code
 .superpowers/
 UI_Images/
+.playwright-mcp/
+landing-design.pen
+*.jpeg
 
 # vercel
 .vercel

@@ -1,6 +1,6 @@
 # GenWallDecor — Project State
 
-> Last updated: 2026-04-23
+> Last updated: 2026-04-29
 > Branch: `main` (all work committed on main)
 
 ---
@@ -47,6 +47,13 @@ Admin pages (`/admin/usage`, `/history`, admin charts) intentionally deferred.
 ---
 
 ## Recent Sessions
+
+### 2026-04-29 (Bugfix — Firestore nested arrays)
+- `pieceVersions` changed from `string[][]` to `Record<string, string[]>` in Firestore storage
+- Root cause: Firestore bans nested arrays; `pieceVersions: [["v0.png"], ...]` caused `INVALID_ARGUMENT` on image generation
+- `types.ts` updated; `generationService.ts` now converts with `toFirestoreVersions`/`fromFirestoreVersions` helpers
+- `history.ts` updated to read map format; API contract (and frontend) unchanged — service still returns `string[][]`
+- 97 tests passing
 
 ### 2026-04-25 (Phase 16 — UI Polish, complete)
 - Landing page: full rewrite — single-viewport navy hero, full-bleed photo, gradient overlay, step pills
